@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.10
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApp1", "WindowsFormsApp1\WindowsFormsApp1.csproj", "{47EDF9EC-05B6-4779-96FA-70DE3B280DA3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeConverter", "TimeConverter\TimeConverter.csproj", "{BD6C805C-6BF8-4035-A5C5-4CE8FE01EE7D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{47EDF9EC-05B6-4779-96FA-70DE3B280DA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47EDF9EC-05B6-4779-96FA-70DE3B280DA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47EDF9EC-05B6-4779-96FA-70DE3B280DA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47EDF9EC-05B6-4779-96FA-70DE3B280DA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD6C805C-6BF8-4035-A5C5-4CE8FE01EE7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD6C805C-6BF8-4035-A5C5-4CE8FE01EE7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD6C805C-6BF8-4035-A5C5-4CE8FE01EE7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD6C805C-6BF8-4035-A5C5-4CE8FE01EE7D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {65CFFD35-6C1F-4DD9-B1F7-8EF8968021A3}
+	EndGlobalSection
+EndGlobal
