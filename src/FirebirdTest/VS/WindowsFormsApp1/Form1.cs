@@ -85,8 +85,8 @@ namespace WindowsFormsApp1
 
             
             //AddTableDataToGrid("schedules", cmd, adap);
-            //AddTableDataToGrid("ATTENDANT", cmd, adap);
-            //AddTableDataToGrid("DEPARTMENTS", cmd, adap);
+            AddTableDataToGrid("ATTENDANT", cmd, adap);
+            AddTableDataToGrid("DEPARTMENTS", cmd, adap);
             //AddTableDataToGrid("DEVICES", cmd, adap);
             //AddTableDataToGrid("EXTRATIME", cmd, adap);
             //AddTableDataToGrid("IDENTIFICATION", cmd, adap);
@@ -131,19 +131,20 @@ namespace WindowsFormsApp1
             dt.TableName = tableName;
             comboTables.Items.Add(new ComboBoxItem(dt.Copy()));
 
-            List<User> users = new List<User>();
+           // List<User> users = new List<User    >();
 
-            foreach (DataRow row in dt.Rows)
-            {
-                User u = new User();
-                u.Firstname = row["firstname"].ToString();
-                u.ID = Convert.ToInt32(row["ID"]);
-                users.Add(u);
-            }
+           // foreach (DataRow row in dt.Rows)
+           // {
+           //     User u = new User();
+           //     u.ID = Convert.ToInt32(row["ID"]);
+           //     u.Firstname = row["firstname"].ToString();
+           //     users.Add(u);
+           // }
 
-           foreach (User u in users)
-                MessageBox.Show(u.Firstname);
+           //foreach (User u in users)
+           //     MessageBox.Show(u.Firstname);
         }
+
         //private void GetTableDataToDatabase(string tableName, FbCommand cmd, FbDataAdapter adap)
         //{
         //    int id = 0;

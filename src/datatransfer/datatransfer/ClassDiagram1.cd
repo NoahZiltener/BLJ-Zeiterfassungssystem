@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="datatransfer.User">
+    <Position X="3.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAgAAIAQAAAAAAAAAAAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="datatransfer.Stamp">
+    <Position X="8" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAAgAAAAAAAAAgAAAAAAAQQA=</HashCode>
+      <FileName>Stamp.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="datatransfer.Day" Collapsed="true">
+    <Position X="3" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABBAAAAAEgAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Day.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
