@@ -16,7 +16,6 @@ namespace datatransfer
         /// UPDATEINOUT = 4 -> Ignoriert
         /// </summary>
         public bool IsIgnored { get; set; }
-
         public int UserID { get; set; }
         
     }

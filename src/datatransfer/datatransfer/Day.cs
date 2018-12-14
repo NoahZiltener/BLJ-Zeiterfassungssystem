@@ -24,7 +24,7 @@ namespace datatransfer
         /// Für einen Tag muss zwingend eine gerade Anzahl Stamps vorhanden sein.
         /// </summary>
         /// <returns>True, if it's a valid day.</returns>
-        private bool IsValidDay()
+        public bool IsValidDay()
         {
             DateTime dt = new DateTime();
 

@@ -41,26 +41,43 @@ namespace datatransfer
 
             List<User> allusers = new List<User>();
             List<Stamp> allstamps = new List<Stamp>();
-            List<Stamp> allDays = new List<Stamp>();
+            List<Day> allDays = new List<Day>();
 
+            CreateUser(dtu, allusers);
+            CreateStamp(dtt, allstamps);
+            CreateDay(allstamps, allDays);
 
-
-
-
-            ////Ausgabe der Daten
-            //foreach (User u in users)
+            //Ausgabe der Daten
+            //foreach (User u in allusers)
             //{
             //    Console.WriteLine("User ID: " + u.ID);
             //    Console.WriteLine("User Vorname: " + u.Firstname);
             //    Console.WriteLine("User Nachname: " + u.Lastname);
             //    Console.WriteLine("User Username: " + u.Username + "\n");
             //}
-            //foreach (Time t in times)
+            //foreach (Stamp t in allstamps)
             //{
             //    Console.WriteLine("Zeit ID: " + t.ID);
             //    Console.WriteLine("User ID: " + t.UserID);
-            //    Console.WriteLine("INOUT: " + t.InOut);
-            //    Console.WriteLine("Zeit: " + t.time + "\n");
+            //    Console.WriteLine("DateAndTime: " + t.DateAndTime);
+            //    Console.WriteLine("Workcode: " + t.Workcode);
+            //    Console.WriteLine("Remark: " + t.Remark);
+            //    Console.WriteLine("IsIgnored: " + t.IsIgnored + "\n");
+            //}
+            //foreach (Day d in allDays)
+            //{
+            //    Console.WriteLine("UserID: " + d.UserID);
+            //    Console.WriteLine("Zeiten: ");
+            //    foreach (Stamp stamp in d.Stamps)
+            //    {
+            //        if (stamp.IsIgnored != true)
+            //        {
+            //            Console.WriteLine(stamp.DateAndTime);
+            //        }
+            //    }
+            //    Console.WriteLine("DateOfDay: " + d.DateOfDay);
+            //    d.IsValid = d.IsValidDay();
+            //    Console.WriteLine("IsValid: " + d.IsValid + "\n");
             //}
             Console.ReadKey();
         }
@@ -76,7 +93,7 @@ namespace datatransfer
                 users.Add(u);
             }
         }
-        static void CreateStamp(DataTable dt, List<Time> stamps)
+        static void CreateStamp(DataTable dt, List<Stamp> stamps)
         {
             foreach(DataRow row in dt.Rows)
             {
@@ -86,7 +103,7 @@ namespace datatransfer
                 s.DateAndTime = Convert.ToDateTime(row["WHEN"]);
                 s.Remark = row["UPDATEREMARK"].ToString();
                 s.Workcode = Convert.ToInt32(row["WORKCODE"]);
-                if (Convert.ToInt32(row["UPDATEINOUT"]) == 4)
+                if (row["UPDATEINOUT"] != DBNull.Value && Convert.ToInt32(row["UPDATEINOUT"]) == 4)
                 {
                     s.IsIgnored = true;
                 }
@@ -94,7 +111,7 @@ namespace datatransfer
                 {
                     s.IsIgnored = false;
                 }
-
+                stamps.Add(s);
             }
             
         }
@@ -107,15 +124,19 @@ namespace datatransfer
                     from day in days
                     where day.UserID == stamp.UserID && stamp.DateAndTime.Date == day.DateOfDay
                     select day;
-                = founddays.Count
-                if (founddays.Count > 0)
+    
+                if (founddays.Count() > 0)
                 {
-
+                    founddays.First().Stamps.Add(stamp);
+               
+                      
                 }
-                //foreach (Day d in query)
-                //{
-                //    d.Stamps.Add(stamp);
-                //}
+                else
+                {
+                    Day d = new Day(stamp.DateAndTime, stamp.UserID);
+                    d.Stamps.Add(stamp);
+                    days.Add(d);
+                }
             }
 
         }
