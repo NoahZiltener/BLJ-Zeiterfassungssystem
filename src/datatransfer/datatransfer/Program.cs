@@ -39,32 +39,32 @@ namespace datatransfer
             cmd.CommandText = "select * from ATTENDANT";
             adap.Fill(dtt);
 
-            List<User> users = new List<User>();
-            insertUserToList(dtu, users);
-
-            List<Time> times = new List<Time>();
-            insertTimeToList(dtt, times);
+            List<User> allusers = new List<User>();
+            List<Stamp> allstamps = new List<Stamp>();
+            List<Stamp> allDays = new List<Stamp>();
 
 
 
-            //Ausgabe der Daten
-            foreach (User u in users)
-            {
-                Console.WriteLine("User ID: " + u.ID);
-                Console.WriteLine("User Vorname: " + u.Firstname);
-                Console.WriteLine("User Nachname: " + u.Lastname);
-                Console.WriteLine("User Username: " + u.Username + "\n");
-            }
-            foreach (Time t in times)
-            {
-                Console.WriteLine("Zeit ID: " + t.ID);
-                Console.WriteLine("User ID: " + t.UserID);
-                Console.WriteLine("INOUT: " + t.InOut);
-                Console.WriteLine("Zeit: " + t.time + "\n");
-            }
+
+
+            ////Ausgabe der Daten
+            //foreach (User u in users)
+            //{
+            //    Console.WriteLine("User ID: " + u.ID);
+            //    Console.WriteLine("User Vorname: " + u.Firstname);
+            //    Console.WriteLine("User Nachname: " + u.Lastname);
+            //    Console.WriteLine("User Username: " + u.Username + "\n");
+            //}
+            //foreach (Time t in times)
+            //{
+            //    Console.WriteLine("Zeit ID: " + t.ID);
+            //    Console.WriteLine("User ID: " + t.UserID);
+            //    Console.WriteLine("INOUT: " + t.InOut);
+            //    Console.WriteLine("Zeit: " + t.time + "\n");
+            //}
             Console.ReadKey();
         }
-        static void insertUserToList(DataTable dt, List<User> users)
+        static void CreateUser(DataTable dt, List<User> users)
         {
             foreach (DataRow row in dt.Rows)
             {
@@ -76,21 +76,48 @@ namespace datatransfer
                 users.Add(u);
             }
         }
-        static void insertTimeToList(DataTable dt, List<Time> times)
+        static void CreateStamp(DataTable dt, List<Time> stamps)
         {
             foreach(DataRow row in dt.Rows)
             {
                 Stamp s = new Stamp();
                 s.ID = Convert.ToInt32(row["ID"]);
+                s.UserID = Convert.ToInt32(row["USERID"]);
                 s.DateAndTime = Convert.ToDateTime(row["WHEN"]);
                 s.Remark = row["UPDATEREMARK"].ToString();
-                s.Workcode = row["WORKCODE"].ToString();
-                //Morgen weitermachen
-                //if(row[""])
-                //s.IsIgnored = row["UPDATEREMARK"].ToString();
-                s.UserID = Convert.ToInt32(row["USERID"]);
+                s.Workcode = Convert.ToInt32(row["WORKCODE"]);
+                if (Convert.ToInt32(row["UPDATEINOUT"]) == 4)
+                {
+                    s.IsIgnored = true;
+                }
+                else
+                {
+                    s.IsIgnored = false;
+                }
+
             }
             
+        }
+        static void CreateDay(List<Stamp> stamps, List<Day> days)
+        {
+            foreach(Stamp stamp in stamps)
+            {
+
+                IEnumerable<Day> founddays =
+                    from day in days
+                    where day.UserID == stamp.UserID && stamp.DateAndTime.Date == day.DateOfDay
+                    select day;
+                = founddays.Count
+                if (founddays.Count > 0)
+                {
+
+                }
+                //foreach (Day d in query)
+                //{
+                //    d.Stamps.Add(stamp);
+                //}
+            }
+
         }
     }
     

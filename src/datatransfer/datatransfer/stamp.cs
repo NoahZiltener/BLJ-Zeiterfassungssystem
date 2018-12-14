@@ -11,7 +11,7 @@ namespace datatransfer
         public int ID { get; set; }
         public DateTime DateAndTime { get; set; }
         public string Remark { get; set; }
-        public string Workcode { get; set; }
+        public int Workcode { get; set; }
         /// <summary>
         /// UPDATEINOUT = 4 -> Ignoriert
         /// </summary>
@@ -19,6 +19,5 @@ namespace datatransfer
 
         public int UserID { get; set; }
         
-
     }
 }

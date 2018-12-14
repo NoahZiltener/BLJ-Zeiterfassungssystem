@@ -11,10 +11,12 @@ namespace datatransfer
         public List<Stamp> Stamps { get; private set; }
         public DateTime DateOfDay { get; set; }
         public bool IsValid {get; set; }
+        public int UserID { get; set; }
 
-        public Day(DateTime dateOfDay)
+        public Day(DateTime dateOfDay, int userid)
         {
             DateOfDay = dateOfDay.Date;
+            UserID = userid;
             Stamps = new List<Stamp>();
         }
 
