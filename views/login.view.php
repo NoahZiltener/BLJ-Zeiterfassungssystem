@@ -7,7 +7,7 @@
             <legend class="form-legend">Sign In</legend>
             <div class="form-group">
                 <label class="form-label" for="username">E-Mail</label>
-                <input class="form-control" type="text" id="email" name="email">
+                <input class="form-control" type="text" id="UserName" name="UserName">
             </div>
             <div class="form-group">
                 <label class="form-label" for="passwd">Passwort</label>

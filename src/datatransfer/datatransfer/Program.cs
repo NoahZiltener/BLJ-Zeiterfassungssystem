@@ -28,15 +28,15 @@ namespace datatransfer
             DataTable tab = con.GetSchema("Tables");
             DataTable dtu = new DataTable();
             DataTable dtt = new DataTable();
-            FbCommand cmd = new FbCommand();
-            cmd.Connection = con;
+            FbCommand cmdfd = new FbCommand();
+            cmdfd.Connection = con;
 
             FbDataAdapter adap = new FbDataAdapter();
-            adap.SelectCommand = cmd;
+            adap.SelectCommand = cmdfd;
 
-            cmd.CommandText = "select * from USERS" ;
+            cmdfd.CommandText = "select * from USERS" ;
             adap.Fill(dtu);
-            cmd.CommandText = "select * from ATTENDANT";
+            cmdfd.CommandText = "select * from ATTENDANT";
             adap.Fill(dtt);
 
             List<User> allusers = new List<User>();
@@ -46,6 +46,31 @@ namespace datatransfer
             CreateUser(dtu, allusers);
             CreateStamp(dtt, allstamps);
             CreateDay(allstamps, allDays);
+
+            Console.WriteLine("Getting Connection ...");
+            MySqlConnection conn = DBUtils.GetDBConnection();
+
+            try
+            {
+                Console.WriteLine("Openning Connection ...");
+
+                conn.Open();
+
+                Console.WriteLine("Connection successful!");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e.Message);
+            }
+            foreach(Day d in allDays)
+            {
+                d.IsValid = d.IsValidDay();
+            }
+
+            InsertUsersInToDB(conn, allusers);
+            InsertStampsInToDB(conn, allstamps);
+            InsertDaysInToDB(conn, allDays);
+            Console.WriteLine("successful!");
 
             //Ausgabe der Daten
             //foreach (User u in allusers)
@@ -128,7 +153,6 @@ namespace datatransfer
                 if (founddays.Count() > 0)
                 {
                     founddays.First().Stamps.Add(stamp);
-               
                       
                 }
                 else
@@ -140,6 +164,131 @@ namespace datatransfer
             }
 
         }
+        static void InsertUsersInToDB(MySqlConnection conn, List<User> allusers)
+        {
+            foreach(User u in allusers)
+            {
+                try
+                {
+                    string sql = "Insert into users (UserID, UserEMail, UserPassword, UserFirstName, UserLastName, UserName)"
+                                    + " values (@UserID, @UserEMail, @UserPassword, @UserFirstName, @UserLastName, @UserName) ";
+                    MySqlCommand cmd = conn.CreateCommand();
+                    cmd.CommandText = sql; 
+
+                    MySqlParameter UserIDParam = new MySqlParameter("@UserID", MySqlDbType.Int32);
+                    UserIDParam.Value = u.ID;
+                    cmd.Parameters.Add(UserIDParam);
+
+                    MySqlParameter UserEMailParam = new MySqlParameter("@UserEMail", MySqlDbType.VarChar);
+                    UserEMailParam.Value = "keine Email vorhanden";
+                    cmd.Parameters.Add(UserEMailParam);
+
+                    MySqlParameter UserPasswordParam = new MySqlParameter("@UserPassword", MySqlDbType.VarChar);
+                    UserPasswordParam.Value = "$2y$10$qCgb4MKzbMKAqUU2LOFBQ.wGoAD6yBElFA7V7EPwK.QGCViJjx4mu";
+                    cmd.Parameters.Add(UserPasswordParam);
+
+                    MySqlParameter UserFirstNameParam = new MySqlParameter("@UserFirstName", MySqlDbType.VarChar);
+                    UserFirstNameParam.Value = u.Firstname;
+                    cmd.Parameters.Add(UserFirstNameParam);
+
+                    MySqlParameter UserLastNameParam = new MySqlParameter("@UserLastName", MySqlDbType.VarChar);
+                    UserLastNameParam.Value = u.Lastname;
+                    cmd.Parameters.Add(UserLastNameParam);
+
+                    MySqlParameter UserNameParam = new MySqlParameter("@UserName", MySqlDbType.VarChar);
+                    UserNameParam.Value = u.Username;
+                    cmd.Parameters.Add(UserNameParam);
+
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error: " + e);
+                    Console.WriteLine(e.StackTrace);
+                }
+            }
+            
+        }
+        static void InsertStampsInToDB(MySqlConnection conn, List<Stamp> allstamps)
+        {
+            foreach (Stamp s in allstamps)
+            {
+                try
+                {
+                    string sql = "Insert into stamps (StampID, StampDateandTime, StampRemark,IsIgnored, StampWorkcode, UserID)"
+                                    + " values (@StampID, @StampDateandTime, @StampRemark,@IsIgnored, @StampWorkcode, @UserID) ";
+                    MySqlCommand cmd = conn.CreateCommand();
+                    cmd.CommandText = sql;
+
+                    MySqlParameter StampIDParam = new MySqlParameter("@StampID", MySqlDbType.Int32);
+                    StampIDParam.Value = s.ID;
+                    cmd.Parameters.Add(StampIDParam);
+
+                    MySqlParameter StampDateandTimeParam = new MySqlParameter("@StampDateandTime", MySqlDbType.DateTime);
+                    StampDateandTimeParam.Value = s.DateAndTime;
+                    cmd.Parameters.Add(StampDateandTimeParam);
+
+                    MySqlParameter StampRemarkParam = new MySqlParameter("@StampRemark", MySqlDbType.VarChar);
+                    StampRemarkParam.Value = s.Remark;
+                    cmd.Parameters.Add(StampRemarkParam);
+
+                    MySqlParameter StampWorkcodeParam = new MySqlParameter("@StampWorkcode", MySqlDbType.Int32);
+                    StampWorkcodeParam.Value = s.Workcode;
+                    cmd.Parameters.Add(StampWorkcodeParam);
+
+                    MySqlParameter IsIgnoredParam = new MySqlParameter("@IsIgnored", MySqlDbType.Int16);
+                    IsIgnoredParam.Value = Convert.ToInt16(s.IsIgnored);
+                    cmd.Parameters.Add(IsIgnoredParam);
+
+                    MySqlParameter UserIDParam = new MySqlParameter("@UserID", MySqlDbType.Int32);
+                    UserIDParam.Value = s.UserID;
+                    cmd.Parameters.Add(UserIDParam);
+
+
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error: " + e);
+                    Console.WriteLine(e.StackTrace);
+                }
+            }
+
+        }
+        static void InsertDaysInToDB(MySqlConnection conn, List<Day> allDays)
+        {
+            foreach (Day u in allDays)
+            {
+                try
+                {
+                    string sql = "Insert into days (DayDate,DayIsValide, UserID)"
+                                    + " values (@DayDate, @DayIsValide, @UserID) ";
+                    MySqlCommand cmd = conn.CreateCommand();
+                    cmd.CommandText = sql;
+
+                    MySqlParameter DayDateParam = new MySqlParameter("@DayDate", MySqlDbType.Date);
+                    DayDateParam.Value = u.DateOfDay;
+                    cmd.Parameters.Add(DayDateParam);
+
+                    MySqlParameter DayIsValideParam = new MySqlParameter("@DayIsValide", MySqlDbType.Int16);
+                    DayIsValideParam.Value = Convert.ToInt16(u.IsValid);
+                    cmd.Parameters.Add(DayIsValideParam);
+
+                    MySqlParameter UserIDParam = new MySqlParameter("@UserID", MySqlDbType.Int32);
+                    UserIDParam.Value = u.UserID;
+                    cmd.Parameters.Add(UserIDParam);
+
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error: " + e);
+                    Console.WriteLine(e.StackTrace);
+                }
+            }
+
+        }
+
     }
     
 }

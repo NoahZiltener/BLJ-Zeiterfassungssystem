@@ -14,13 +14,7 @@ namespace datatransfer
         public string Firstname { get; set; }
         public string Lastname { get; set; }
         public string Username { get; set; }
-     
-        public List<Day> Days { get; private set; }
 
-                public User()
-        {
-            Days = new List<Day>();
-        }
     }
     
     
