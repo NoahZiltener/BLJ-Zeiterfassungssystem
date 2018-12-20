@@ -12,6 +12,9 @@ namespace datatransfer
         public DateTime DateOfDay { get; set; }
         public bool IsValid {get; set; }
         public int UserID { get; set; }
+        public TimeSpan overtime { get; set; }
+        public TimeSpan worktime { get; set; }
+        public TimeSpan lunchtime { get; set; } 
 
         public Day(DateTime dateOfDay, int userid)
         {
@@ -53,6 +56,56 @@ namespace datatransfer
                 return false;
 
             return true;
+        }
+        public TimeSpan GetWorkTime()
+        {
+            
+            return TimeOfDay;
+        }
+        public TimeSpan Getlunchtime()
+        {
+            TimeSpan TimeOfDay = new TimeSpan();
+            DateTime firsttime = new DateTime();
+            firsttime = Stamps.First().DateAndTime;
+            DateTime lasttime = new DateTime();
+            lasttime = Stamps.Last().DateAndTime;
+            TimeOfDay = lasttime - firsttime;
+            
+            TimeSpan lunchtime = new TimeSpan();
+            DateTime[] times = new DateTime[Stamps.Count()];
+            int arrayindex = 0;
+            foreach(Stamp s in Stamps)
+            {
+                times[arrayindex] = s.DateAndTime;
+                arrayindex++;
+            }
+            if(times.Length > 0)
+            {
+                for (int i = 1; i < times.Length - 1; i = i +2)
+                {
+                    int i2 = 2;
+                    DateTime stampout = new DateTime();
+                    DateTime stampin = new DateTime();
+                    stampout = times[i];
+                    stampin = times[i2];
+                    TimeSpan time = firsttime - lasttime;
+                    lunchtime = lunchtime + time;
+                    i2 = i2 + 2;
+                }
+            }
+            Console.Write(lunchtime.TotalHours);
+            return lunchtime;
+        }
+        public TimeSpan GetOverTime()
+        {
+            TimeSpan OverTime = new TimeSpan();
+            DateTime firsttime = new DateTime();
+            firsttime = Stamps.First().DateAndTime;
+            DateTime lasttime = new DateTime();
+            lasttime = Stamps.Last().DateAndTime;
+            worktime = lasttime - firsttime;
+            Console.WriteLine(worktime.TotalHours);
+            return OverTime;
         }
 
 

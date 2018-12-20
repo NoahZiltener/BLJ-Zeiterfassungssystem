@@ -36,7 +36,7 @@ namespace datatransfer
 
             cmdfd.CommandText = "select * from USERS" ;
             adap.Fill(dtu);
-            cmdfd.CommandText = "select * from ATTENDANT";
+            cmdfd.CommandText = "select * from ATTENDANT order by \"WHEN\" asc";
             adap.Fill(dtt);
 
             List<User> allusers = new List<User>();
@@ -61,10 +61,6 @@ namespace datatransfer
             catch (Exception e)
             {
                 Console.WriteLine("Error: " + e.Message);
-            }
-            foreach(Day d in allDays)
-            {
-                d.IsValid = d.IsValidDay();
             }
 
             InsertUsersInToDB(conn, allusers);
@@ -137,6 +133,17 @@ namespace datatransfer
                     s.IsIgnored = false;
                 }
                 stamps.Add(s);
+                if (row["updatewhen"] != DBNull.Value)
+                {
+                   s.UpdateDate = Convert.ToDateTime(row["updatewhen"]);
+                   s.UpdateUserID = Convert.ToInt32(row["UPDATEUSERID"]);
+                }
+                else if(row["updatechangewhen"] != DBNull.Value)
+                {
+                    s.UpdateDate = Convert.ToDateTime(row["updatechangewhen"]);
+                    s.UpdateUserID = Convert.ToInt32(row["UPDATEUSERID"]);
+                }
+                
             }
             
         }
@@ -162,6 +169,16 @@ namespace datatransfer
                     days.Add(d);
                 }
             }
+            foreach (Day d in days)
+            {
+                d.IsValid = d.IsValidDay();
+                if(d.IsValid == true)
+                {
+                    d.GetWorkTime();
+                }
+            }
+            
+
 
         }
         static void InsertUsersInToDB(MySqlConnection conn, List<User> allusers)

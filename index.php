@@ -20,13 +20,16 @@
     <link rel="stylesheet" type="text/css" media="screen" href="css/style.css" />
 </head>
 <body>
-<?php
-    if (!in_array($page, $pages)) {
-        include 'views/404.view.php';
-    }
-    else { 
-        include 'views/' . $page . '.view.php';
-    }
-?>  
+    <div class="wrapper">
+        <h1 class="form-title">Time Counter 4000</h1>
+        <?php
+            if (!in_array($page, $pages)) {
+                include 'views/404.view.php';
+            }
+            else { 
+                include 'views/' . $page . '.view.php';
+            }
+        ?>  
+    </div>
 </body>
 </html>
