@@ -63,9 +63,9 @@ namespace datatransfer
                 Console.WriteLine("Error: " + e.Message);
             }
 
-            InsertUsersInToDB(conn, allusers);
-            InsertStampsInToDB(conn, allstamps);
-            InsertDaysInToDB(conn, allDays);
+            //InsertUsersInToDB(conn, allusers);
+            //InsertStampsInToDB(conn, allstamps);
+            //InsertDaysInToDB(conn, allDays);
             Console.WriteLine("successful!");
 
             //Ausgabe der Daten
@@ -85,21 +85,24 @@ namespace datatransfer
             //    Console.WriteLine("Remark: " + t.Remark);
             //    Console.WriteLine("IsIgnored: " + t.IsIgnored + "\n");
             //}
-            //foreach (Day d in allDays)
-            //{
-            //    Console.WriteLine("UserID: " + d.UserID);
-            //    Console.WriteLine("Zeiten: ");
-            //    foreach (Stamp stamp in d.Stamps)
-            //    {
-            //        if (stamp.IsIgnored != true)
-            //        {
-            //            Console.WriteLine(stamp.DateAndTime);
-            //        }
-            //    }
-            //    Console.WriteLine("DateOfDay: " + d.DateOfDay);
-            //    d.IsValid = d.IsValidDay();
-            //    Console.WriteLine("IsValid: " + d.IsValid + "\n");
-            //}
+            foreach (Day d in allDays)
+            {
+                Console.WriteLine("UserID: " + d.UserID);
+                Console.WriteLine("Zeiten: ");
+                foreach (Stamp stamp in d.Stamps)
+                {
+                    if (stamp.IsIgnored != true)
+                    {
+                        Console.WriteLine(stamp.DateAndTime);
+                    }
+                }
+                Console.WriteLine("DateOfDay: " + d.DateOfDay);
+                Console.WriteLine("worktime: " + d.worktime.TotalHours);
+                Console.WriteLine("lunchtime: " + d.lunchtime.TotalHours);
+                Console.WriteLine("overtime: " + d.overtime);
+                Console.WriteLine("TimeOfDay: " + d.TimeOfDay.TotalHours);
+                Console.WriteLine("IsValid: " + d.IsValid + "\n");
+            }
             Console.ReadKey();
         }
         static void CreateUser(DataTable dt, List<User> users)
@@ -157,12 +160,12 @@ namespace datatransfer
                     where day.UserID == stamp.UserID && stamp.DateAndTime.Date == day.DateOfDay
                     select day;
     
-                if (founddays.Count() > 0)
+                if (founddays.Count() > 0 && stamp.IsIgnored != true)
                 {
                     founddays.First().Stamps.Add(stamp);
                       
                 }
-                else
+                else if (stamp.IsIgnored != true)
                 {
                     Day d = new Day(stamp.DateAndTime, stamp.UserID);
                     d.Stamps.Add(stamp);
@@ -174,7 +177,10 @@ namespace datatransfer
                 d.IsValid = d.IsValidDay();
                 if(d.IsValid == true)
                 {
-                    d.GetWorkTime();
+                    d.TimeOfDay = d.GetTimeOfDay();
+                    d.worktime = d.GetWorkTime();
+                    d.lunchtime = d.Getlunchtime();
+                    d.overtime = d.GetOverTime();
                 }
             }
             

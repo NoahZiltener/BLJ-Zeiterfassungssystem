@@ -12,7 +12,8 @@ namespace datatransfer
         public DateTime DateOfDay { get; set; }
         public bool IsValid {get; set; }
         public int UserID { get; set; }
-        public TimeSpan overtime { get; set; }
+        public double overtime { get; set; }
+        public TimeSpan TimeOfDay { get; set; }
         public TimeSpan worktime { get; set; }
         public TimeSpan lunchtime { get; set; } 
 
@@ -59,52 +60,54 @@ namespace datatransfer
         }
         public TimeSpan GetWorkTime()
         {
-            
-            return TimeOfDay;
-        }
-        public TimeSpan Getlunchtime()
-        {
-            TimeSpan TimeOfDay = new TimeSpan();
-            DateTime firsttime = new DateTime();
-            firsttime = Stamps.First().DateAndTime;
-            DateTime lasttime = new DateTime();
-            lasttime = Stamps.Last().DateAndTime;
-            TimeOfDay = lasttime - firsttime;
-            
-            TimeSpan lunchtime = new TimeSpan();
-            DateTime[] times = new DateTime[Stamps.Count()];
-            int arrayindex = 0;
-            foreach(Stamp s in Stamps)
-            {
-                times[arrayindex] = s.DateAndTime;
-                arrayindex++;
-            }
-            if(times.Length > 0)
-            {
-                for (int i = 1; i < times.Length - 1; i = i +2)
+            DateTime StampIn = new DateTime();
+            DateTime StampOut = new DateTime();
+            TimeSpan Timeperiod = new TimeSpan();
+            TimeSpan WorkTime = new TimeSpan();
+            if (Stamps.Count() > 2)
+            { 
+                int i = 0;
+                int i2 = 1;
+                while ( i2 < Stamps.Count())
                 {
-                    int i2 = 2;
-                    DateTime stampout = new DateTime();
-                    DateTime stampin = new DateTime();
-                    stampout = times[i];
-                    stampin = times[i2];
-                    TimeSpan time = firsttime - lasttime;
-                    lunchtime = lunchtime + time;
+                    StampIn = Stamps[i].DateAndTime;
+                    StampOut = Stamps[i2].DateAndTime;
+                    Timeperiod = StampOut - StampIn;
+                    WorkTime = WorkTime + Timeperiod;
+                    i = i + 2;
                     i2 = i2 + 2;
                 }
             }
-            Console.Write(lunchtime.TotalHours);
+            else
+            {
+                WorkTime = TimeOfDay;
+            }
+            return WorkTime;
+        }
+        public TimeSpan Getlunchtime()
+        {
+            TimeSpan lunchtime = new TimeSpan();
+            lunchtime = TimeOfDay - worktime;
             return lunchtime;
         }
-        public TimeSpan GetOverTime()
+        public TimeSpan GetTimeOfDay()
         {
-            TimeSpan OverTime = new TimeSpan();
-            DateTime firsttime = new DateTime();
-            firsttime = Stamps.First().DateAndTime;
-            DateTime lasttime = new DateTime();
-            lasttime = Stamps.Last().DateAndTime;
-            worktime = lasttime - firsttime;
-            Console.WriteLine(worktime.TotalHours);
+            DateTime StampCome = new DateTime();
+            DateTime StampGo = new DateTime();
+            TimeSpan TimeOfDay = new TimeSpan();
+
+            StampCome = Stamps[0].DateAndTime;
+            StampGo = Stamps[Stamps.Count() - 1].DateAndTime;
+            TimeOfDay = StampGo - StampCome;
+
+            return TimeOfDay;
+        }
+        public double GetOverTime()
+        {
+            double OverTime = 0; 
+           
+            
+            OverTime = worktime.TotalHours - 8;
             return OverTime;
         }
 
