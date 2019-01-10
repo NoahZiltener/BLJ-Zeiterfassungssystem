@@ -8,12 +8,13 @@ using FirebirdSql.Data.FirebirdClient;
 using System.Data;
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using System.Data.Common;
 
 namespace datatransfer
 {
     class Program
     {
-        
+
         static void Main(string[] args)
         {
             string connectionString =
@@ -34,7 +35,7 @@ namespace datatransfer
             FbDataAdapter adap = new FbDataAdapter();
             adap.SelectCommand = cmdfd;
 
-            cmdfd.CommandText = "select * from USERS" ;
+            cmdfd.CommandText = "select * from USERS";
             adap.Fill(dtu);
             cmdfd.CommandText = "select * from ATTENDANT order by \"WHEN\" asc";
             adap.Fill(dtt);
@@ -42,10 +43,25 @@ namespace datatransfer
             List<User> allusers = new List<User>();
             List<Stamp> allstamps = new List<Stamp>();
             List<Day> allDays = new List<Day>();
+            List<User> allusersfromedb = new List<User>();
+            List<Stamp> allstampsfromdb = new List<Stamp>();
+            List<Day> allDaysfromdb = new List<Day>();
 
             CreateUser(dtu, allusers);
             CreateStamp(dtt, allstamps);
             CreateDay(allstamps, allDays);
+
+            foreach (Day d in allDays)
+            {
+                d.IsValid = d.IsValidDay();
+                if (d.IsValid == true)
+                {
+                    d.TimeOfDay = d.GetTimeOfDay();
+                    d.worktime = d.GetWorkTime();
+                    d.lunchtime = d.Getlunchtime();
+                    d.overtime = d.GetOverTime();
+                }
+            }
 
             Console.WriteLine("Getting Connection ...");
             MySqlConnection conn = DBUtils.GetDBConnection();
@@ -62,11 +78,15 @@ namespace datatransfer
             {
                 Console.WriteLine("Error: " + e.Message);
             }
+            getuserfromDB(conn, allusersfromedb);
+            getStampsfromDB(conn, allstampsfromdb);
+            getDaysfromDB(conn, allDaysfromdb);
 
-            //InsertUsersInToDB(conn, allusers);
-            //InsertStampsInToDB(conn, allstamps);
-            //InsertDaysInToDB(conn, allDays);
-            Console.WriteLine("successful!");
+            InsertUsersInToDB(conn, allusers, allusersfromedb);
+            InsertStampsInToDB(conn, allstamps, allstampsfromdb);
+            InsertDaysInToDB(conn, allDays, allDaysfromdb);
+            Console.WriteLine("Transfer successful!");
+            Console.Beep();
 
             //Ausgabe der Daten
             //foreach (User u in allusers)
@@ -85,24 +105,41 @@ namespace datatransfer
             //    Console.WriteLine("Remark: " + t.Remark);
             //    Console.WriteLine("IsIgnored: " + t.IsIgnored + "\n");
             //}
-            foreach (Day d in allDays)
-            {
-                Console.WriteLine("UserID: " + d.UserID);
-                Console.WriteLine("Zeiten: ");
-                foreach (Stamp stamp in d.Stamps)
-                {
-                    if (stamp.IsIgnored != true)
-                    {
-                        Console.WriteLine(stamp.DateAndTime);
-                    }
-                }
-                Console.WriteLine("DateOfDay: " + d.DateOfDay);
-                Console.WriteLine("worktime: " + d.worktime.TotalHours);
-                Console.WriteLine("lunchtime: " + d.lunchtime.TotalHours);
-                Console.WriteLine("overtime: " + d.overtime);
-                Console.WriteLine("TimeOfDay: " + d.TimeOfDay.TotalHours);
-                Console.WriteLine("IsValid: " + d.IsValid + "\n");
-            }
+            //foreach (Day d in allDays)
+            //{
+            //    Console.WriteLine("UserID: " + d.UserID);
+            //    Console.WriteLine("DayID: " + d.DayID);
+            //    Console.WriteLine("Zeiten: ");
+            //    foreach (Stamp stamp in d.Stamps)
+            //    {
+            //        if (stamp.IsIgnored != true)
+            //        {
+            //            Console.WriteLine(stamp.DateAndTime);
+            //        }
+            //    }
+            //    Console.WriteLine("DateOfDay: " + d.DateOfDay);
+            //    Console.WriteLine("worktime: " + d.worktime);
+            //    Console.WriteLine("lunchtime: " + d.lunchtime);
+            //    Console.WriteLine("overtime: " + d.overtime);
+            //    Console.WriteLine("TimeOfDay: " + d.TimeOfDay);
+            //    Console.WriteLine("IsValid: " + d.IsValid + "\n");
+            //}
+            //foreach (User u in allusersfromedb)
+            //{
+            //    Console.WriteLine("UserID: " + u.ID);
+            //    Console.WriteLine("Firstname: " + u.Firstname);
+            //    Console.WriteLine("Lastname: " + u.Lastname);
+            //    Console.WriteLine("Username: " + u.Username + "\n");
+            //}
+            //foreach (Stamp t in allstampsfromdb)
+            //{
+            //    Console.WriteLine("Zeit ID: " + t.ID);
+            //    Console.WriteLine("User ID: " + t.UserID);
+            //    Console.WriteLine("DateAndTime: " + t.DateAndTime);
+            //    Console.WriteLine("Workcode: " + t.Workcode);
+            //    Console.WriteLine("Remark: " + t.Remark);
+            //    Console.WriteLine("IsIgnored: " + t.IsIgnored + "\n");
+            //}
             Console.ReadKey();
         }
         static void CreateUser(DataTable dt, List<User> users)
@@ -116,10 +153,11 @@ namespace datatransfer
                 u.Username = row["username"].ToString();
                 users.Add(u);
             }
+            Console.WriteLine("User Createt!");
         }
         static void CreateStamp(DataTable dt, List<Stamp> stamps)
         {
-            foreach(DataRow row in dt.Rows)
+            foreach (DataRow row in dt.Rows)
             {
                 Stamp s = new Stamp();
                 s.ID = Convert.ToInt32(row["ID"]);
@@ -138,32 +176,33 @@ namespace datatransfer
                 stamps.Add(s);
                 if (row["updatewhen"] != DBNull.Value)
                 {
-                   s.UpdateDate = Convert.ToDateTime(row["updatewhen"]);
-                   s.UpdateUserID = Convert.ToInt32(row["UPDATEUSERID"]);
+                    s.UpdateDate = Convert.ToDateTime(row["updatewhen"]);
+                    s.UpdateUserID = Convert.ToInt32(row["UPDATEUSERID"]);
                 }
-                else if(row["updatechangewhen"] != DBNull.Value)
+                else if (row["updatechangewhen"] != DBNull.Value)
                 {
                     s.UpdateDate = Convert.ToDateTime(row["updatechangewhen"]);
                     s.UpdateUserID = Convert.ToInt32(row["UPDATEUSERID"]);
                 }
-                
+
             }
-            
+            Console.WriteLine("Stamps Createt!");
         }
         static void CreateDay(List<Stamp> stamps, List<Day> days)
         {
-            foreach(Stamp stamp in stamps)
+            int ID = 0;
+            foreach (Stamp stamp in stamps)
             {
 
                 IEnumerable<Day> founddays =
                     from day in days
                     where day.UserID == stamp.UserID && stamp.DateAndTime.Date == day.DateOfDay
                     select day;
-    
+
                 if (founddays.Count() > 0 && stamp.IsIgnored != true)
                 {
                     founddays.First().Stamps.Add(stamp);
-                      
+
                 }
                 else if (stamp.IsIgnored != true)
                 {
@@ -173,30 +212,50 @@ namespace datatransfer
                 }
             }
             foreach (Day d in days)
+            {   
+                d.DayID = ID;
+                ID++;
+            }
+            Console.WriteLine("Days Createt!");
+        }
+        static void InsertUsersInToDB(MySqlConnection conn, List<User> allusers, List<User> allusersfromdb)
+        {
+            List<User> usernotindb = new List<User>();
+            List<int> allUserids = new List<int>();
+            List<int> allusersfromdbids = new List<int>();
+            foreach (User u in allusers)
             {
-                d.IsValid = d.IsValidDay();
-                if(d.IsValid == true)
+                allUserids.Add(u.ID);
+            }
+            foreach (User u in allusersfromdb)
+            {
+                allusersfromdbids.Add(u.ID);
+            }
+            foreach (int i in allusersfromdbids)
+            {
+                if (allUserids.Contains(i))
                 {
-                    d.TimeOfDay = d.GetTimeOfDay();
-                    d.worktime = d.GetWorkTime();
-                    d.lunchtime = d.Getlunchtime();
-                    d.overtime = d.GetOverTime();
+                    allUserids.Remove(i);
                 }
             }
-            
-
-
-        }
-        static void InsertUsersInToDB(MySqlConnection conn, List<User> allusers)
-        {
-            foreach(User u in allusers)
+            foreach (int id in allUserids)
+            {
+                User user = allusers.Find(
+                delegate (User u)
+                {
+                    return u.ID == id;
+                }
+                );
+                usernotindb.Add(user);
+            }
+            foreach (User u in usernotindb)
             {
                 try
                 {
                     string sql = "Insert into users (UserID, UserEMail, UserPassword, UserFirstName, UserLastName, UserName)"
                                     + " values (@UserID, @UserEMail, @UserPassword, @UserFirstName, @UserLastName, @UserName) ";
                     MySqlCommand cmd = conn.CreateCommand();
-                    cmd.CommandText = sql; 
+                    cmd.CommandText = sql;
 
                     MySqlParameter UserIDParam = new MySqlParameter("@UserID", MySqlDbType.Int32);
                     UserIDParam.Value = u.ID;
@@ -230,11 +289,39 @@ namespace datatransfer
                     Console.WriteLine(e.StackTrace);
                 }
             }
-            
+            Console.WriteLine("Insert Users completet!");
         }
-        static void InsertStampsInToDB(MySqlConnection conn, List<Stamp> allstamps)
+        static void InsertStampsInToDB(MySqlConnection conn, List<Stamp> allstamps, List<Stamp> allstampsfromdb)
         {
+            List<Stamp> Stampnotindb = new List<Stamp>();
+            List<int> allStampids = new List<int>();
+            List<int> allStampsfromdbids = new List<int>();
             foreach (Stamp s in allstamps)
+            {
+                allStampids.Add(s.ID);
+            }
+            foreach (Stamp s in allstampsfromdb)
+            {
+                allStampsfromdbids.Add(s.ID);
+            }
+            foreach (int i in allStampsfromdbids)
+            {
+                if (allStampids.Contains(i))
+                {
+                    allStampids.Remove(i);
+                }
+            }
+            foreach (int id in allStampids)
+            {
+                Stamp stamp = allstamps.Find(
+                delegate (Stamp s)
+                {
+                    return s.ID == id;
+                }
+                );
+                Stampnotindb.Add(stamp);
+            }
+            foreach (Stamp s in Stampnotindb)
             {
                 try
                 {
@@ -276,18 +363,50 @@ namespace datatransfer
                     Console.WriteLine(e.StackTrace);
                 }
             }
-
+            Console.WriteLine("Insert Stamps completet!");
         }
-        static void InsertDaysInToDB(MySqlConnection conn, List<Day> allDays)
+        static void InsertDaysInToDB(MySqlConnection conn, List<Day> allDays, List<Day> allDaysfromdb)
         {
-            foreach (Day u in allDays)
+            List<Day> Daynotindb = new List<Day>();
+            List<int> allDaydayID = new List<int>();
+            List<int> allDayfromdbdayID = new List<int>();
+            foreach (Day d in allDays)
+            {
+                allDaydayID.Add(d.DayID);
+            }
+            foreach (Day d in allDaysfromdb)
+            {
+                allDayfromdbdayID.Add(d.DayID);
+            }
+            foreach (int i in allDayfromdbdayID)
+            {
+                if (allDaydayID.Contains(i))
+                {
+                    allDaydayID.Remove(i);
+                }
+            }
+            foreach (int id in allDaydayID)
+            {
+                Day Day = allDays.Find(            
+                delegate (Day d)
+                {
+                    return d.DayID == id;
+                }
+                );
+                Daynotindb.Add(Day);
+            }
+            foreach (Day u in Daynotindb)
             {
                 try
                 {
-                    string sql = "Insert into days (DayDate,DayIsValide, UserID)"
-                                    + " values (@DayDate, @DayIsValide, @UserID) ";
+                    string sql = "Insert into days (DayID, DayDate,DayIsValide, UserID, overtime, TimeOfDay, worktime, lunchtime)"
+                                    + " values (@DayID, @DayDate, @DayIsValide, @UserID, @overtime, @TimeOfDay, @worktime, @lunchtime) ";
                     MySqlCommand cmd = conn.CreateCommand();
                     cmd.CommandText = sql;
+
+                    MySqlParameter DayIDParam = new MySqlParameter("@DayID", MySqlDbType.Int32);
+                    DayIDParam.Value = u.DayID;
+                    cmd.Parameters.Add(DayIDParam);
 
                     MySqlParameter DayDateParam = new MySqlParameter("@DayDate", MySqlDbType.Date);
                     DayDateParam.Value = u.DateOfDay;
@@ -301,6 +420,22 @@ namespace datatransfer
                     UserIDParam.Value = u.UserID;
                     cmd.Parameters.Add(UserIDParam);
 
+                    MySqlParameter overtimeParam = new MySqlParameter("@overtime", MySqlDbType.Double);
+                    overtimeParam.Value = Convert.ToDouble(u.overtime);
+                    cmd.Parameters.Add(overtimeParam);
+
+                    MySqlParameter TimeOfDayParam = new MySqlParameter("@TimeOfDay", MySqlDbType.Double);
+                    TimeOfDayParam.Value = u.TimeOfDay;
+                    cmd.Parameters.Add(TimeOfDayParam);
+
+                    MySqlParameter worktimeParam = new MySqlParameter("@worktime", MySqlDbType.Double);
+                    worktimeParam.Value = u.worktime;
+                    cmd.Parameters.Add(worktimeParam);
+
+                    MySqlParameter lunchtimeParam = new MySqlParameter("@lunchtime", MySqlDbType.Double);
+                    lunchtimeParam.Value = u.lunchtime;
+                    cmd.Parameters.Add(lunchtimeParam);
+
                     cmd.ExecuteNonQuery();
                 }
                 catch (Exception e)
@@ -309,7 +444,134 @@ namespace datatransfer
                     Console.WriteLine(e.StackTrace);
                 }
             }
+            Console.WriteLine("Insert Days completet!");
+        }
+        static void getuserfromDB(MySqlConnection conn, List<User> allusersfromDB)
+        {
+            string sql = "Select * from users";
+            MySqlCommand cmd = new MySqlCommand();
 
+            cmd.Connection = conn;
+            cmd.CommandText = sql;
+
+            using (DbDataReader reader = cmd.ExecuteReader())
+            {
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        int UserIDIndex = reader.GetOrdinal("UserID");
+                        int UserID = Convert.ToInt32(reader.GetValue(UserIDIndex));
+                        int UserFirstNameIndex = reader.GetOrdinal("UserFirstName");
+                        string UserFirstName = reader.GetString(UserFirstNameIndex);
+                        int UserLastNameIndex = reader.GetOrdinal("UserLastName");
+                        string UserLastName = reader.GetString(UserLastNameIndex);
+                        int UserNameIndex = reader.GetOrdinal("UserName");
+                        string UserName = reader.GetString(UserNameIndex);
+
+                        User u = new User();
+                        u.ID = UserID;
+                        u.Firstname = UserFirstName;
+                        u.Lastname = UserLastName;
+                        u.Username = UserName;
+                        allusersfromDB.Add(u);
+                    }
+                }
+            }
+        }
+        static void getStampsfromDB(MySqlConnection conn, List<Stamp> allStampsfromDB)
+        {
+            string sql = "Select * from stamps";
+            MySqlCommand cmd = new MySqlCommand();
+
+            cmd.Connection = conn;
+            cmd.CommandText = sql;
+
+            using (DbDataReader reader = cmd.ExecuteReader())
+            {
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        int StampIDIndex = reader.GetOrdinal("StampID");
+                        int StampID = Convert.ToInt32(reader.GetValue(StampIDIndex));
+
+                        int StampDateandTimeIndex = reader.GetOrdinal("StampDateandTime");
+                        DateTime StampDateandTime = Convert.ToDateTime(reader.GetValue(StampDateandTimeIndex));
+
+                        int StampRemarkIndex = reader.GetOrdinal("StampRemark");
+                        string StampRemark = reader.GetString(StampRemarkIndex);
+
+                        int StampWorkcodeIndex = reader.GetOrdinal("StampWorkcode");
+                        int StampWorkcode = Convert.ToInt32(reader.GetValue(StampWorkcodeIndex));
+
+                        int IsIgnoredIndex = reader.GetOrdinal("IsIgnored");
+                        bool IsIgnored = Convert.ToBoolean(reader.GetValue(IsIgnoredIndex));
+
+                        int UserIDIndex = reader.GetOrdinal("UserID");
+                        int UserID = Convert.ToInt32(reader.GetValue(UserIDIndex));
+
+                        Stamp s = new Stamp();
+                        s.ID = StampID;
+                        s.DateAndTime = StampDateandTime;
+                        s.Remark = StampRemark;
+                        s.Workcode = StampWorkcode;
+                        s.IsIgnored = IsIgnored;
+                        s.UserID = UserID;
+                        allStampsfromDB.Add(s);
+                    }
+                }
+            }
+        }
+        static void getDaysfromDB(MySqlConnection conn, List<Day> allDaysfromDB)
+        {
+            string sql = "Select * from Days";
+            MySqlCommand cmd = new MySqlCommand();
+
+            cmd.Connection = conn;
+            cmd.CommandText = sql;
+
+            using (DbDataReader reader = cmd.ExecuteReader())
+            {
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        int DayIDIndex = reader.GetOrdinal("DayID");
+                        int DayID = Convert.ToInt32(reader.GetValue(DayIDIndex));
+
+                        int UserIDIndex = reader.GetOrdinal("UserID");
+                        int UserID = Convert.ToInt32(reader.GetValue(UserIDIndex));
+
+                        int StampDateandTimeIndex = reader.GetOrdinal("DayDate");
+                        DateTime StampDateandTime = Convert.ToDateTime(reader.GetValue(StampDateandTimeIndex));
+
+                        int DayIsValideIndex = reader.GetOrdinal("DayIsValide");
+                        bool DayIsValide = Convert.ToBoolean(reader.GetValue(DayIsValideIndex));
+
+                        int overtimeIndex = reader.GetOrdinal("overtime");
+                        double overtime = Convert.ToDouble(reader.GetValue(overtimeIndex));
+
+                        int TimeOfDayIndex = reader.GetOrdinal("TimeOfDay");
+                        double TimeOfDay = Convert.ToDouble(reader.GetValue(TimeOfDayIndex));
+
+                        int worktimeIndex = reader.GetOrdinal("worktime");
+                        double worktime = Convert.ToDouble(reader.GetValue(worktimeIndex));
+
+                        int lunchtimeIndex = reader.GetOrdinal("lunchtime");
+                        double lunchtime = Convert.ToDouble(reader.GetValue(lunchtimeIndex));
+
+                        Day s = new Day(StampDateandTime, UserID);
+                        s.DayID = DayID;
+                        s.IsValid = DayIsValide;
+                        s.overtime = overtime;
+                        s.TimeOfDay = TimeOfDay;
+                        s.worktime = worktime;
+                        s.lunchtime = lunchtime;
+                        allDaysfromDB.Add(s);
+                    }
+                }
+            }
         }
 
     }

@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
  
     if ($user !== false && password_verify($passwd, $user['UserPassword'])) {
         $_SESSION['UserID'] = $user['UserID'];
-        header("Location: http://10.20.16.104/Projekt-BLJ/index.php?page=timereport");
+        header("Location: http://localhost/Projekt-BLJ/index.php?page=timereport");
         
     } else {
         $errors[] = "E-Mail oder Passwort war ungültig";

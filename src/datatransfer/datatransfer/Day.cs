@@ -8,14 +8,15 @@ namespace datatransfer
 {
     class Day
     {
+        public int DayID { get; set; }
         public List<Stamp> Stamps { get; private set; }
         public DateTime DateOfDay { get; set; }
         public bool IsValid {get; set; }
         public int UserID { get; set; }
         public double overtime { get; set; }
-        public TimeSpan TimeOfDay { get; set; }
-        public TimeSpan worktime { get; set; }
-        public TimeSpan lunchtime { get; set; } 
+        public double TimeOfDay { get; set; }
+        public double worktime { get; set; }
+        public double lunchtime { get; set; } 
 
         public Day(DateTime dateOfDay, int userid)
         {
@@ -58,7 +59,7 @@ namespace datatransfer
 
             return true;
         }
-        public TimeSpan GetWorkTime()
+        public double GetWorkTime()
         {
             DateTime StampIn = new DateTime();
             DateTime StampOut = new DateTime();
@@ -77,20 +78,20 @@ namespace datatransfer
                     i = i + 2;
                     i2 = i2 + 2;
                 }
+                return WorkTime.TotalHours;
             }
             else
             {
-                WorkTime = TimeOfDay;
+                return TimeOfDay;
             }
-            return WorkTime;
         }
-        public TimeSpan Getlunchtime()
+        public double Getlunchtime()
         {
-            TimeSpan lunchtime = new TimeSpan();
+            double lunchtime;
             lunchtime = TimeOfDay - worktime;
             return lunchtime;
         }
-        public TimeSpan GetTimeOfDay()
+        public double GetTimeOfDay()
         {
             DateTime StampCome = new DateTime();
             DateTime StampGo = new DateTime();
@@ -100,14 +101,14 @@ namespace datatransfer
             StampGo = Stamps[Stamps.Count() - 1].DateAndTime;
             TimeOfDay = StampGo - StampCome;
 
-            return TimeOfDay;
+            return TimeOfDay.TotalHours;
         }
         public double GetOverTime()
         {
             double OverTime = 0; 
            
             
-            OverTime = worktime.TotalHours - 8;
+            OverTime = worktime - 8;
             return OverTime;
         }
 
