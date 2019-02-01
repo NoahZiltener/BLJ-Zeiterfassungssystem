@@ -118,5 +118,15 @@ namespace datatransfer
             OverTime = worktime - 8;
             return OverTime;
         }
+        public bool compareDays(Day s)
+        {
+            bool compareBool = false;
+            if (s.DayID == DayID)
+            {
+                compareBool = true;
+
+            }
+            return compareBool;
+        }
     }
 }

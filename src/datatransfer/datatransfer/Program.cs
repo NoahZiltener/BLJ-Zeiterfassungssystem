@@ -14,7 +14,6 @@ namespace datatransfer
 {
     class Program
     {
-
         static void Main(string[] args)
         {
             string connectionString =
@@ -46,22 +45,14 @@ namespace datatransfer
             List<User> allusersfromedb = new List<User>();
             List<Stamp> allstampsfromdb = new List<Stamp>();
             List<Day> allDaysfromdb = new List<Day>();
+            List<Stamp> allstampscopy = new List<Stamp>();
 
             CreateUser(dtu, allusers);
             CreateStamp(dtt, allstamps);
+            delDoubleStamps(allstamps, allstampscopy);
             CreateDay(allstamps, allDays);
 
-            foreach (Day d in allDays)
-            {
-                d.IsValid = d.IsValidDay();
-                if (d.IsValid == true)
-                {
-                    d.TimeOfDay = d.GetTimeOfDay();
-                    d.worktime = d.GetWorkTime();
-                    d.lunchtime = d.Getlunchtime();
-                    d.overtime = d.GetOverTime();
-                }
-            }
+            getTime(allDays);
 
             Console.WriteLine("Getting Connection ...");
             MySqlConnection conn = DBUtils.GetDBConnection();
@@ -85,72 +76,10 @@ namespace datatransfer
             InsertUsersInToDB(conn, allusers, allusersfromedb);
             InsertStampsInToDB(conn, allstamps, allstampsfromdb);
             InsertDaysInToDB(conn, allDays, allDaysfromdb);
+
             Console.WriteLine("Transfer successful!");
             Console.Beep();
 
-            ////Ausgabe der Daten
-            ////foreach (User u in allusers)
-            ////{
-            ////    Console.WriteLine("User ID: " + u.ID);
-            ////    Console.WriteLine("User Vorname: " + u.Firstname);
-            ////    Console.WriteLine("User Nachname: " + u.Lastname);
-            ////    Console.WriteLine("User Username: " + u.Username + "\n");
-            ////}
-            ////foreach (Stamp t in allstamps)
-            ////{
-            ////    Console.WriteLine("Zeit ID: " + t.ID);
-            ////    Console.WriteLine("User ID: " + t.UserID);
-            ////    Console.WriteLine("DateAndTime: " + t.DateAndTime);
-            ////    Console.WriteLine("Workcode: " + t.Workcode);
-            ////    Console.WriteLine("Remark: " + t.Remark);
-            ////    Console.WriteLine("IsIgnored: " + t.IsIgnored + "\n");
-            ////}
-            //List<double> overtimeall = new List<double>();
-            //foreach (Day d in allDays)
-            //{
-            //    if (d.UserID == 29)
-            //    {
-            //        Console.WriteLine("UserID: " + d.UserID);
-            //        //Console.WriteLine("DayID: " + d.DayID);
-            //        //Console.WriteLine("Zeiten: ");
-            //        //foreach (Stamp stamp in d.Stamps)
-            //        //{
-            //        //    if (stamp.IsIgnored != true)
-            //        //    {
-            //        //        Console.WriteLine(stamp.DateAndTime);
-            //        //    }
-            //        //}
-            //        //Console.WriteLine("DateOfDay: " + d.DateOfDay);
-            //        Console.WriteLine("worktime: " + d.worktime);
-            //        Console.WriteLine("lunchtime: " + d.lunchtime);
-            //        Console.WriteLine("overtime: " + d.overtime);
-            //        overtimeall.Add(d.overtime);
-            //        Console.WriteLine("TimeOfDay: " + d.TimeOfDay + "\n");
-            //        //Console.WriteLine("IsValid: " + d.IsValid + "\n");
-            //    }
-            //}
-            //double ovot = 0;
-            //foreach (double ov in overtimeall)
-            //{
-            //    ovot = ov + ovot;
-            //}
-            //Console.WriteLine(ovot);
-            //foreach (User u in allusersfromedb)
-            //{
-            //    Console.WriteLine("UserID: " + u.ID);
-            //    Console.WriteLine("Firstname: " + u.Firstname);
-            //    Console.WriteLine("Lastname: " + u.Lastname);
-            //    Console.WriteLine("Username: " + u.Username + "\n");
-            //}
-            //foreach (Stamp t in allstampsfromdb)
-            //{
-            //    Console.WriteLine("Zeit ID: " + t.ID);
-            //    Console.WriteLine("User ID: " + t.UserID);
-            //    Console.WriteLine("DateAndTime: " + t.DateAndTime);
-            //    Console.WriteLine("Workcode: " + t.Workcode);
-            //    Console.WriteLine("Remark: " + t.Remark);
-            //    Console.WriteLine("IsIgnored: " + t.IsIgnored + "\n");
-            //}
             Console.ReadKey();
         }
         static void CreateUser(DataTable dt, List<User> users)
@@ -234,31 +163,24 @@ namespace datatransfer
             List<User> usernotindb = new List<User>();
             List<int> allUserids = new List<int>();
             List<int> allusersfromdbids = new List<int>();
-            foreach (User u in allusers)
+
+            foreach (User s in allusers)
             {
-                allUserids.Add(u.ID);
-            }
-            foreach (User u in allusersfromdb)
-            {
-                allusersfromdbids.Add(u.ID);
-            }
-            foreach (int i in allusersfromdbids)
-            {
-                if (allUserids.Contains(i))
+                bool userExist = false;
+                foreach (User s2 in allusersfromdb)
                 {
-                    allUserids.Remove(i);
+                    if (s.compareUsers(s2) == true)
+                    {
+                        userExist = true;
+                        break;
+                    }
+                }
+                if (userExist == false)
+                {
+                    usernotindb.Add(s);
                 }
             }
-            foreach (int id in allUserids)
-            {
-                User user = allusers.Find(
-                delegate (User u)
-                {
-                    return u.ID == id;
-                }
-                );
-                usernotindb.Add(user);
-            }
+
             foreach (User u in usernotindb)
             {
                 try
@@ -305,33 +227,42 @@ namespace datatransfer
         static void InsertStampsInToDB(MySqlConnection conn, List<Stamp> allstamps, List<Stamp> allstampsfromdb)
         {
             List<Stamp> Stampnotindb = new List<Stamp>();
-            List<int> allStampids = new List<int>();
-            List<int> allStampsfromdbids = new List<int>();
+            List<Stamp> Stampdifferent = new List<Stamp>();
+
             foreach (Stamp s in allstamps)
             {
-                allStampids.Add(s.ID);
-            }
-            foreach (Stamp s in allstampsfromdb)
-            {
-                allStampsfromdbids.Add(s.ID);
-            }
-            foreach (int i in allStampsfromdbids)
-            {
-                if (allStampids.Contains(i))
+                bool stampExist = false;
+                foreach(Stamp s2 in allstampsfromdb)
                 {
-                    allStampids.Remove(i);
+                    if (s.compareStamps(s2) == true)
+                    {
+                        stampExist = true;
+                        break;
+                    }
+                }
+                if(stampExist == false)
+                {
+                    Stampnotindb.Add(s);
                 }
             }
-            foreach (int id in allStampids)
+
+            foreach (Stamp s in allstamps)
             {
-                Stamp stamp = allstamps.Find(
-                delegate (Stamp s)
+                bool stampdifferent = false;
+                foreach (Stamp s2 in allstampsfromdb)
                 {
-                    return s.ID == id;
+                    if (s.isStampsdifferent(s2) == true)
+                    {
+                        stampdifferent = true;
+                        break;
+                    }
                 }
-                );
-                Stampnotindb.Add(stamp);
+                if (stampdifferent == true)
+                {
+                    Stampdifferent.Add(s);
+                }
             }
+
             foreach (Stamp s in Stampnotindb)
             {
                 try
@@ -368,6 +299,27 @@ namespace datatransfer
 
                     cmd.ExecuteNonQuery();
                 }
+                
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error: " + e);
+                    Console.WriteLine(e.StackTrace);
+                }
+            }
+            foreach (Stamp s in Stampdifferent)
+            {
+                try
+                {
+                    string sql = "Update stamps set IsIgnored = @IsIgnored where StampID = @StamId";
+
+                    MySqlCommand cmd = conn.CreateCommand();
+                    cmd.CommandText = sql;
+
+                    cmd.Parameters.AddWithValue("@IsIgnored", s.IsIgnored);
+                    cmd.Parameters.AddWithValue("@StamId", s.ID);
+
+                    cmd.ExecuteNonQuery();
+                }
                 catch (Exception e)
                 {
                     Console.WriteLine("Error: " + e);
@@ -381,31 +333,24 @@ namespace datatransfer
             List<Day> Daynotindb = new List<Day>();
             List<int> allDaydayID = new List<int>();
             List<int> allDayfromdbdayID = new List<int>();
-            foreach (Day d in allDays)
+
+            foreach (Day s in allDays)
             {
-                allDaydayID.Add(d.DayID);
-            }
-            foreach (Day d in allDaysfromdb)
-            {
-                allDayfromdbdayID.Add(d.DayID);
-            }
-            foreach (int i in allDayfromdbdayID)
-            {
-                if (allDaydayID.Contains(i))
+                bool dayExist = false;
+                foreach (Day s2 in allDaysfromdb)
                 {
-                    allDaydayID.Remove(i);
+                    if (s.compareDays(s2) == true)
+                    {
+                        dayExist = true;
+                        break;
+                    }
+                }
+                if (dayExist == false)
+                {
+                    Daynotindb.Add(s);
                 }
             }
-            foreach (int id in allDaydayID)
-            {
-                Day Day = allDays.Find(            
-                delegate (Day d)
-                {
-                    return d.DayID == id;
-                }
-                );
-                Daynotindb.Add(Day);
-            }
+
             foreach (Day u in Daynotindb)
             {
                 try
@@ -581,6 +526,48 @@ namespace datatransfer
                         s.lunchtime = lunchtime;
                         allDaysfromDB.Add(s);
                     }
+                }
+            }
+        }
+        static void delDoubleStamps(List<Stamp> allstamps, List<Stamp> allstampscopy)
+        {
+            foreach (Stamp s in allstamps)
+            {
+                allstampscopy.Add(s);
+            }
+
+            foreach (Stamp s in allstampscopy)
+            {
+                bool Stampdouble = false;
+                int i = 0;
+                foreach (Stamp s2 in allstamps)
+                {
+                    if (s.isStampsdouble(s2) == true && i == 0)
+                    {
+                        i++;
+                    }
+                    else if (s.isStampsdouble(s2) == true && i > 0)
+                    {
+                        Stampdouble = true;
+                    }
+                }
+                if (Stampdouble == true)
+                {
+                    allstamps.Remove(s);
+                }
+            }
+        }
+        static void getTime(List<Day> allDays)
+        {
+            foreach (Day d in allDays)
+            {
+                d.IsValid = d.IsValidDay();
+                if (d.IsValid == true)
+                {
+                    d.TimeOfDay = d.GetTimeOfDay();
+                    d.worktime = d.GetWorkTime();
+                    d.lunchtime = d.Getlunchtime();
+                    d.overtime = d.GetOverTime();
                 }
             }
         }

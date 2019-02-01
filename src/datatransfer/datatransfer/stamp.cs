@@ -19,5 +19,46 @@ namespace datatransfer
         public bool IsIgnored { get; set; }
         public int UpdateUserID { get; set; }
         public DateTime UpdateDate { get; set; }
+
+        public bool compareStamps(Stamp s)
+        {
+            bool compareBool = false;
+            if(s.ID == ID)
+            {
+                compareBool = true;
+                
+            }
+            return compareBool;
+            
+        }
+        public bool isStampsdifferent(Stamp s)
+        {
+            bool compareBool = false;
+            if (s.IsIgnored != IsIgnored && s.ID == ID)
+            {
+                compareBool = true;
+
+            }
+            return compareBool;
+
+        }
+        public bool isStampsdouble(Stamp s)
+        {
+            bool compareBool = false;
+            TimeSpan d = new TimeSpan();
+            if(DateAndTime > s.DateAndTime)
+            {
+                d = DateAndTime - s.DateAndTime;
+            }
+            else
+            {
+                d = s.DateAndTime - DateAndTime;
+            }
+            if(d.TotalSeconds < 5 && s.UserID == UserID)
+            {
+                compareBool = true;
+            }
+            return compareBool;
+        }
     }
 }
