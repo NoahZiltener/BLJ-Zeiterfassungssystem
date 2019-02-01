@@ -87,8 +87,15 @@ namespace datatransfer
         }
         public double Getlunchtime()
         {
+            double addtime = 0;
             double lunchtime;
             lunchtime = TimeOfDay - worktime;
+            if(lunchtime < 0.75 && lunchtime != 0)
+            {
+                addtime = 0.75 - lunchtime;
+                lunchtime = 0.75;
+                worktime = TimeOfDay - 0.75;
+            }
             return lunchtime;
         }
         public double GetTimeOfDay()
@@ -111,7 +118,5 @@ namespace datatransfer
             OverTime = worktime - 8;
             return OverTime;
         }
-
-
     }
 }

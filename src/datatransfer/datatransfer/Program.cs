@@ -88,42 +88,53 @@ namespace datatransfer
             Console.WriteLine("Transfer successful!");
             Console.Beep();
 
-            //Ausgabe der Daten
-            //foreach (User u in allusers)
-            //{
-            //    Console.WriteLine("User ID: " + u.ID);
-            //    Console.WriteLine("User Vorname: " + u.Firstname);
-            //    Console.WriteLine("User Nachname: " + u.Lastname);
-            //    Console.WriteLine("User Username: " + u.Username + "\n");
-            //}
-            //foreach (Stamp t in allstamps)
-            //{
-            //    Console.WriteLine("Zeit ID: " + t.ID);
-            //    Console.WriteLine("User ID: " + t.UserID);
-            //    Console.WriteLine("DateAndTime: " + t.DateAndTime);
-            //    Console.WriteLine("Workcode: " + t.Workcode);
-            //    Console.WriteLine("Remark: " + t.Remark);
-            //    Console.WriteLine("IsIgnored: " + t.IsIgnored + "\n");
-            //}
+            ////Ausgabe der Daten
+            ////foreach (User u in allusers)
+            ////{
+            ////    Console.WriteLine("User ID: " + u.ID);
+            ////    Console.WriteLine("User Vorname: " + u.Firstname);
+            ////    Console.WriteLine("User Nachname: " + u.Lastname);
+            ////    Console.WriteLine("User Username: " + u.Username + "\n");
+            ////}
+            ////foreach (Stamp t in allstamps)
+            ////{
+            ////    Console.WriteLine("Zeit ID: " + t.ID);
+            ////    Console.WriteLine("User ID: " + t.UserID);
+            ////    Console.WriteLine("DateAndTime: " + t.DateAndTime);
+            ////    Console.WriteLine("Workcode: " + t.Workcode);
+            ////    Console.WriteLine("Remark: " + t.Remark);
+            ////    Console.WriteLine("IsIgnored: " + t.IsIgnored + "\n");
+            ////}
+            //List<double> overtimeall = new List<double>();
             //foreach (Day d in allDays)
             //{
-            //    Console.WriteLine("UserID: " + d.UserID);
-            //    Console.WriteLine("DayID: " + d.DayID);
-            //    Console.WriteLine("Zeiten: ");
-            //    foreach (Stamp stamp in d.Stamps)
+            //    if (d.UserID == 29)
             //    {
-            //        if (stamp.IsIgnored != true)
-            //        {
-            //            Console.WriteLine(stamp.DateAndTime);
-            //        }
+            //        Console.WriteLine("UserID: " + d.UserID);
+            //        //Console.WriteLine("DayID: " + d.DayID);
+            //        //Console.WriteLine("Zeiten: ");
+            //        //foreach (Stamp stamp in d.Stamps)
+            //        //{
+            //        //    if (stamp.IsIgnored != true)
+            //        //    {
+            //        //        Console.WriteLine(stamp.DateAndTime);
+            //        //    }
+            //        //}
+            //        //Console.WriteLine("DateOfDay: " + d.DateOfDay);
+            //        Console.WriteLine("worktime: " + d.worktime);
+            //        Console.WriteLine("lunchtime: " + d.lunchtime);
+            //        Console.WriteLine("overtime: " + d.overtime);
+            //        overtimeall.Add(d.overtime);
+            //        Console.WriteLine("TimeOfDay: " + d.TimeOfDay + "\n");
+            //        //Console.WriteLine("IsValid: " + d.IsValid + "\n");
             //    }
-            //    Console.WriteLine("DateOfDay: " + d.DateOfDay);
-            //    Console.WriteLine("worktime: " + d.worktime);
-            //    Console.WriteLine("lunchtime: " + d.lunchtime);
-            //    Console.WriteLine("overtime: " + d.overtime);
-            //    Console.WriteLine("TimeOfDay: " + d.TimeOfDay);
-            //    Console.WriteLine("IsValid: " + d.IsValid + "\n");
             //}
+            //double ovot = 0;
+            //foreach (double ov in overtimeall)
+            //{
+            //    ovot = ov + ovot;
+            //}
+            //Console.WriteLine(ovot);
             //foreach (User u in allusersfromedb)
             //{
             //    Console.WriteLine("UserID: " + u.ID);
@@ -186,7 +197,7 @@ namespace datatransfer
                 }
 
             }
-            Console.WriteLine("Stamps Createt!");
+            Console.WriteLine("Stamps Created!");
         }
         static void CreateDay(List<Stamp> stamps, List<Day> days)
         {
@@ -216,7 +227,7 @@ namespace datatransfer
                 d.DayID = ID;
                 ID++;
             }
-            Console.WriteLine("Days Createt!");
+            Console.WriteLine("Days Created!");
         }
         static void InsertUsersInToDB(MySqlConnection conn, List<User> allusers, List<User> allusersfromdb)
         {
@@ -289,7 +300,7 @@ namespace datatransfer
                     Console.WriteLine(e.StackTrace);
                 }
             }
-            Console.WriteLine("Insert Users completet!");
+            Console.WriteLine("Insert Users completed!");
         }
         static void InsertStampsInToDB(MySqlConnection conn, List<Stamp> allstamps, List<Stamp> allstampsfromdb)
         {

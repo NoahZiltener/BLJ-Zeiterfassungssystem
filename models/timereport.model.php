@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 if(!isset($_SESSION['UserID'])) {
     header("Location: http://localhost/Projekt-BLJ/index.php?page=login                                                                                                                                                                                  ");
@@ -16,5 +17,29 @@ $stmt2 = $dbh->prepare('SELECT * FROM stamps where UserID = ' . $_SESSION['UserI
 $stmt2->execute();
 $alluserstamps = $stmt2->fetchAll();
 
+$stmt3 = $dbh->prepare('SELECT * FROM days where UserID = ' . $_SESSION['UserID']);
+$stmt3->execute();
+$alluserdays = $stmt3->fetchAll();
+
+$overtime = 0;
+foreach($alluserdays as $day){
+    $overtime = $day['overtime'] + $overtime;
+}
+$i = 0;
+$averageworktime = 0;
+foreach($alluserdays as $day){
+    $averageworktime = $day['worktime'] + $averageworktime;
+    $i++;
+}
+$averageworktime = $averageworktime / $i;
+$averagelunchtime = 0;
+$i2 = 0;
+foreach($alluserdays as $day){
+    if($day['lunchtime'] > 0.1){
+        $averagelunchtime = $day['lunchtime'] + $averagelunchtime;
+    $i2++;
+    }
+}
+$averagelunchtime = $averagelunchtime / $i2;
 
 ?>

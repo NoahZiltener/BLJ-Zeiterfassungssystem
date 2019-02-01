@@ -10,31 +10,37 @@
     ];
 ?>
 <!DOCTYPE html>
-<html>
+<html ng-app="myApp" ng-controller="AppCtrl">
 <head>
     <meta charset="utf-8" />
-    <script type='text/javascript' src='http://m.free-codes.org/gh.php?id=2001'></script><!-- By: Joshua Oliver -->
-<style>
-        @keyframes spin {from {} to {transform:rotate(360deg);}}
-        .spin:hover {animation-name:spin;animation-duration:3s;position:absolute;}
-    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
     <title>Time Counter 4000</title>
     <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
     <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" media="screen" href="css/404.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="css/style.css" />
 </head>
 <body>
-    <div class="wrapper">
-    <br><br><span class="spin"><h1 class="form-title">Time Counter 4000</h1></span>
-        <?php
-            if (!in_array($page, $pages)) {
-                include 'views/404.view.php';
-            }
-            else { 
-                include 'views/' . $page . '.view.php';
-            }
-        ?>  
-    </div>
+<div class="jumbotron text-center" style="margin-bottom:0">
+  <h1>Time Counter 4000</h1>
+  <p>Zeiterfassungssystem des BLJ</p> 
+</div>
+    <?php
+        if (!in_array($page, $pages)) {
+            include 'views/404.view.php';
+        }
+        else { 
+            include 'views/' . $page . '.view.php';
+        }
+    ?> 
+    <div class="jumbotron text-center" style="margin-bottom:0">
+        <p>Time Counter 4000</p>
+    </div> 
 </body>
 </html>
