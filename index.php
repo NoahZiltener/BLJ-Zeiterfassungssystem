@@ -40,6 +40,7 @@
     ?>
     <div class="jumbotron text-center" style="margin-bottom:0">
         <p>Time Counter</p>
+        <p>Made by Noah Ziltner</p>
     </div>
 </body>
 </html>
