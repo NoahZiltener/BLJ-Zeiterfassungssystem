@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($user !== false && password_verify($passwd, $user['UserPassword'])) {
         $_SESSION['UserID'] = $user['UserID'];
+        $_SESSION['UserName'] = $user['UserName'];
         header("Location: http://localhost/Projekt-BLJ/index.php?page=timereport");
 
     } else {

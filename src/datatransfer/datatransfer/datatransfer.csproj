@@ -69,8 +69,11 @@
     <Compile Include="User.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <AdditionalFiles Include="libs\Firebird-2.5.0.26074-0_Win32_embed\aliases.conf" />
+    <None Include="App1.config" />
     <None Include="ClassDiagram1.cd" />
     <None Include="libs\Firebird-2.5.0.26074-0_Win32_embed\doc\Firebird-2.5-QuickStart.pdf" />
     <None Include="libs\Firebird-2.5.0.26074-0_Win32_embed\doc\Firebird_v2.1.3.InstallationGuide.pdf" />

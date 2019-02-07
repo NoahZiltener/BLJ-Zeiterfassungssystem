@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace datatransfer
 {
@@ -16,15 +17,16 @@ namespace datatransfer
         public double overtime { get; set; }
         public double TimeOfDay { get; set; }
         public double worktime { get; set; }
-        public double lunchtime { get; set; } 
+        public double lunchtime { get; set; }
 
+        static double mandatorylunchtime = Convert.ToDouble(ConfigurationManager.AppSettings.Get("mandatorylunchtime"));
+        static double mandatoryworktime = Convert.ToDouble(ConfigurationManager.AppSettings.Get("mandatoryworktime"));
         public Day(DateTime dateOfDay, int userid)
         {
             DateOfDay = dateOfDay.Date;
             UserID = userid;
             Stamps = new List<Stamp>();
         }
-
         /// <summary>
         /// Für einen Tag muss zwingend eine gerade Anzahl Stamps vorhanden sein.
         /// </summary>
@@ -32,7 +34,6 @@ namespace datatransfer
         public bool IsValidDay()
         {
             DateTime dt = new DateTime();
-
             if (Stamps.Count > 0)
             {
                 dt = Stamps[0].DateAndTime.Date;
@@ -46,7 +47,6 @@ namespace datatransfer
 
                 }
             }
-
             int count = 0;
             foreach (Stamp s in Stamps)
             {
@@ -90,11 +90,11 @@ namespace datatransfer
             double addtime = 0;
             double lunchtime;
             lunchtime = TimeOfDay - worktime;
-            if(lunchtime < 0.75 && lunchtime != 0)
+            if(lunchtime < mandatorylunchtime && lunchtime != 0)
             {
-                addtime = 0.75 - lunchtime;
-                lunchtime = 0.75;
-                worktime = TimeOfDay - 0.75;
+                addtime = mandatorylunchtime - lunchtime;
+                lunchtime = mandatorylunchtime;
+                worktime = TimeOfDay - mandatorylunchtime;
             }
             return lunchtime;
         }
@@ -112,10 +112,9 @@ namespace datatransfer
         }
         public double GetOverTime()
         {
-            double OverTime = 0; 
-           
+            double OverTime = 0;
             
-            OverTime = worktime - 8;
+            OverTime = worktime - mandatoryworktime;
             return OverTime;
         }
         public bool compareDays(Day s)

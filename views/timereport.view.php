@@ -1,7 +1,7 @@
-<?php 
+<?php
 include 'models/timereport.model.php';
 $userid = $_SESSION['UserID'];
-?> 
+?>
 <div class="container" style="margin-top:30px">
   <div class="row">
     <div class="col-sm-4">
@@ -19,18 +19,19 @@ $userid = $_SESSION['UserID'];
         <p><?=round($averagelunchtime, 2) . " Stunden"?></p>
         <ul class="nav nav-pills flex-column">
             <li class="nav-item">
-                <form name="blog-form" action="index.php?page=logout" method="post">     
+                <form name="blog-form" action="index.php?page=logout" method="post">
                     <div class="form-actions">
                         <input class="btn btn-primary" type="submit" value="Logout">
+                        <input class="btn btn-primary" type="submit" value="Passwort ändern">
                     </div>
-                </form>   
+                </form>
             </li>
         </ul>
         <hr class="d-sm-none">
         </div>
         <div class="col-sm-8">
             <h3>Übersicht:</h3>
-            <button class="collapsible">Tagesübersicht</button>
+            <button class="collapsible">Tages Übersicht</button>
             <div class="content">
                 <form name="blog-form" action="index.php?page=timereport" method="post" class="serch-forms">
                     <input type="date" name="dayserch" id="dayserch">
@@ -38,14 +39,32 @@ $userid = $_SESSION['UserID'];
                 </form>
                 <?php include 'views/serchday.view.php';?>
             </div>
-            <button class="collapsible">Monatsübersicht</button>
-            <div class="content">
-                <h3>work in progress</h3>
+            <?php foreach($users as $user): ?>
+              <?php if($user['isAdmin'] == true): ?>
+              <button class="collapsible">Stemplungen korrigieren</button>
+              <div class="content">
+                  <form name="blog-form" action="index.php?page=timereport" method="post" class="serch-forms">
+                      <select name="userauswahl" id="userauswahl">
+                        <?php foreach($allusers as $user): ?>
+                          <?php if($_SESSION['UserIDselected'] == $user['UserID']):?>
+                          <option value="<?= htmlspecialchars($user['UserID'], ENT_QUOTES, "UTF-8"); ?>" selected><?= htmlspecialchars($user['UserName'], ENT_QUOTES, "UTF-8"); ?></option>
+                        <?php else:?>
+                          <option value="<?= htmlspecialchars($user['UserID'], ENT_QUOTES, "UTF-8"); ?>"><?= htmlspecialchars($user['UserName'], ENT_QUOTES, "UTF-8"); ?></option>
+                        <?php endif;?>
+                        <?php endforeach;?>
+                      </select>
+                      <input class="btn btn-primary" type="submit" value="Suchen">
+                  </form>
+                <div class="form-actions">
+                  <form name="blog-form" action="index.php?page=timereport" method="post" class="serch-forms">
+                      <input type="date" name="dayserchuser" id="dayserchuser">
+                      <input class="btn btn-primary" type="submit" value="Suchen">
+                  </form>
+                </div>
+                <?php include 'views/backend.view.php';?>
             </div>
-            <button class="collapsible">Jahresübersicht</button>
-            <div class="content">
-                <h3>work in progress</h3>
-            </div>
+          <?php endif; ?>
+        <?php endforeach;?>
         </div>
     </div>
   </div>
@@ -61,7 +80,7 @@ $userid = $_SESSION['UserID'];
         content.style.maxHeight = null;
         } else {
         content.style.maxHeight = content.scrollHeight + "px";
-        } 
+        }
     });
     }
 </script>

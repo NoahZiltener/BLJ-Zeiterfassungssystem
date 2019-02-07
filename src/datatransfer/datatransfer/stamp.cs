@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace datatransfer
         public bool IsIgnored { get; set; }
         public int UpdateUserID { get; set; }
         public DateTime UpdateDate { get; set; }
-
+        static int secondsbetweenstamps = Convert.ToInt32(ConfigurationManager.AppSettings.Get("secondsbetweenstamps"));
         public bool compareStamps(Stamp s)
         {
             bool compareBool = false;
@@ -45,6 +46,7 @@ namespace datatransfer
         public bool isStampsdouble(Stamp s)
         {
             bool compareBool = false;
+            
             TimeSpan d = new TimeSpan();
             if(DateAndTime > s.DateAndTime)
             {
@@ -54,7 +56,7 @@ namespace datatransfer
             {
                 d = s.DateAndTime - DateAndTime;
             }
-            if(d.TotalSeconds < 5 && s.UserID == UserID)
+            if(d.TotalSeconds < secondsbetweenstamps && s.UserID == UserID)
             {
                 compareBool = true;
             }

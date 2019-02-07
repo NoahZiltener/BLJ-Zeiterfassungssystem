@@ -9,6 +9,7 @@ using System.Data;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Data.Common;
+using System.Configuration;
 
 namespace datatransfer
 {
@@ -16,10 +17,11 @@ namespace datatransfer
     {
         static void Main(string[] args)
         {
+            string pathdatabase = ConfigurationManager.AppSettings.Get("pathdatabase");
             string connectionString =
                   @"User =SYSDBA;" +
                   @"Password=masterkey;" +
-                  @"Database=C:\xampp\htdocs\Projekt-BLJ\src\TADATA.FDB;" +
+                  @"Database=" + pathdatabase + ";" +
                   @"ServerType=1";
 
             FbConnection con = new FbConnection(connectionString);
@@ -326,7 +328,7 @@ namespace datatransfer
                     Console.WriteLine(e.StackTrace);
                 }
             }
-            Console.WriteLine("Insert Stamps completet!");
+            Console.WriteLine("Insert Stamps completed!");
         }
         static void InsertDaysInToDB(MySqlConnection conn, List<Day> allDays, List<Day> allDaysfromdb)
         {
@@ -400,7 +402,7 @@ namespace datatransfer
                     Console.WriteLine(e.StackTrace);
                 }
             }
-            Console.WriteLine("Insert Days completet!");
+            Console.WriteLine("Insert Days completed!");
         }
         static void getuserfromDB(MySqlConnection conn, List<User> allusersfromDB)
         {

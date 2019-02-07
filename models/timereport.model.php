@@ -21,6 +21,10 @@ $stmt3 = $dbh->prepare('SELECT * FROM days where UserID = ' . $_SESSION['UserID'
 $stmt3->execute();
 $alluserdays = $stmt3->fetchAll();
 
+$stmt4 = $dbh->prepare('SELECT * FROM users');
+$stmt4->execute();
+$allusers = $stmt4->fetchAll();
+
 $overtime = 0;
 foreach($alluserdays as $day){
     $overtime = $day['overtime'] + $overtime;
