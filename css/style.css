@@ -96,3 +96,6 @@ fieldset {
   .serch-forms{
       padding: 20px;
   }
+  #userauswahl{
+    height: 30px;
+  }

@@ -35,34 +35,58 @@ $userid = $_SESSION['UserID'];
             <div class="content">
                 <form name="blog-form" action="index.php?page=timereport" method="post" class="serch-forms">
                     <input type="date" name="dayserch" id="dayserch">
-                    <input class="btn btn-primary" type="submit" value="Suchen">
+                    <input class="btn btn-primary" type="submit" value="Suchen" name="tagessuchebutton">
                 </form>
                 <?php include 'views/serchday.view.php';?>
             </div>
             <?php foreach($users as $user): ?>
               <?php if($user['isAdmin'] == true): ?>
-              <button class="collapsible">Stemplungen korrigieren</button>
-              <div class="content">
-                  <form name="blog-form" action="index.php?page=timereport" method="post" class="serch-forms">
-                      <select name="userauswahl" id="userauswahl">
-                        <?php foreach($allusers as $user): ?>
-                          <?php if($_SESSION['UserIDselected'] == $user['UserID']):?>
-                          <option value="<?= htmlspecialchars($user['UserID'], ENT_QUOTES, "UTF-8"); ?>" selected><?= htmlspecialchars($user['UserName'], ENT_QUOTES, "UTF-8"); ?></option>
-                        <?php else:?>
-                          <option value="<?= htmlspecialchars($user['UserID'], ENT_QUOTES, "UTF-8"); ?>"><?= htmlspecialchars($user['UserName'], ENT_QUOTES, "UTF-8"); ?></option>
-                        <?php endif;?>
-                        <?php endforeach;?>
-                      </select>
-                      <input class="btn btn-primary" type="submit" value="Suchen">
-                  </form>
-                <div class="form-actions">
-                  <form name="blog-form" action="index.php?page=timereport" method="post" class="serch-forms">
-                      <input type="date" name="dayserchuser" id="dayserchuser">
-                      <input class="btn btn-primary" type="submit" value="Suchen">
-                  </form>
-                </div>
-                <?php include 'views/backend.view.php';?>
-            </div>
+            <button class="collapsible">Zeiten korrigieren</button>
+            <div class="content">
+                <form name="blog-form" action="index.php?page=timereport" method="post" class="serch-forms">
+                    <select name="userauswahl123" id="userauswahl">
+                      <?php foreach($allusers as $user): ?>
+                        <?php if($_SESSION['UserIDselected'] == $user['UserID']):?>
+                        <option value="<?= htmlspecialchars($user['UserID'], ENT_QUOTES, "UTF-8"); ?>" selected><?= htmlspecialchars($user['UserName'], ENT_QUOTES, "UTF-8"); ?></option>
+                      <?php else:?>
+                        <option value="<?= htmlspecialchars($user['UserID'], ENT_QUOTES, "UTF-8"); ?>"><?= htmlspecialchars($user['UserName'], ENT_QUOTES, "UTF-8"); ?></option>
+                      <?php endif;?>
+                      <?php endforeach;?>
+                    </select>
+                    <input class="btn btn-primary" type="submit" value="Suchen">
+                </form>
+              <?php include 'views/correctusertimes.view.php';?>
+          </div>
+          <button class="collapsible">Stemplungen korrigieren</button>
+          <div class="content">
+            <form name="blog-form" action="index.php?page=timereport" method="post" class="serch-forms">
+                <select name="userauswahl123" id="userauswahl">
+                  <?php foreach($allusers as $user): ?>
+                    <option value="<?= htmlspecialchars($user['UserID'], ENT_QUOTES, "UTF-8"); ?>"><?= htmlspecialchars($user['UserName'], ENT_QUOTES, "UTF-8"); ?></option>
+                  <?php endforeach;?>
+                </select>
+                <input type="date" name="userTag213" id="userTag">
+                <input class="btn btn-primary" type="submit" value="Suchen">
+            </form>
+            <?php include 'views/correctstamps.view.php';?>
+        </div>
+          <button class="collapsible">Tage korrigieren</button>
+          <div class="content">
+              <form name="blog-form" action="index.php?page=timereport" method="post" class="serch-forms">
+                  <select name="userauswahl" id="userauswahl">
+                    <?php foreach($allusers as $user): ?>
+                      <?php if($_SESSION['UserIDselected'] == $user['UserID']):?>
+                      <option value="<?= htmlspecialchars($user['UserID'], ENT_QUOTES, "UTF-8"); ?>" selected><?= htmlspecialchars($user['UserName'], ENT_QUOTES, "UTF-8"); ?></option>
+                    <?php else:?>
+                      <option value="<?= htmlspecialchars($user['UserID'], ENT_QUOTES, "UTF-8"); ?>"><?= htmlspecialchars($user['UserName'], ENT_QUOTES, "UTF-8"); ?></option>
+                    <?php endif;?>
+                    <?php endforeach;?>
+                  </select>
+                  <input type="date" name="userTag" id="userTag">
+                  <input class="btn btn-primary" type="submit" value="Suchen" name="tagekorrigierenbutton">
+              </form>
+            <?php include 'views/correctdays.view.php';?>
+        </div>
           <?php endif; ?>
         <?php endforeach;?>
         </div>
