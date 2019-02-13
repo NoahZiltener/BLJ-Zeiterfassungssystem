@@ -30,7 +30,6 @@ $userid = $_SESSION['UserID'];
         <hr class="d-sm-none">
         </div>
         <div class="col-sm-8">
-            <h3>Übersicht:</h3>
             <button class="collapsible">Tages Übersicht</button>
             <div class="content">
                 <form name="blog-form" action="index.php?page=timereport" method="post" class="serch-forms">
