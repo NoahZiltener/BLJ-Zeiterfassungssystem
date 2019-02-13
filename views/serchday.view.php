@@ -1,7 +1,7 @@
 <?php
 include 'models/serchday.model.php';
 ?>
-<?php if ($_SERVER['REQUEST_METHOD'] === 'POST' && count($userdays) > 0): ?>
+<?php if ($_SERVER['REQUEST_METHOD'] === 'POST' && count($userdays) > 0 && isset($_POST['tagessuchebutton'])): ?>
             <?php foreach($userdays as $day): ?>
                 <?php if($day['DayDate'] == $_SESSION['date']): ?>
                     <h3>Arbeitszeit:</h3>
