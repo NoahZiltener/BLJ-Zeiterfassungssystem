@@ -7,6 +7,7 @@ Ich habe eine Consolen-Applikation programmiert. Sie kann die Daten von dem Zeit
 
 ## Lösungskonzept
 Ich habe eine C# Consolen Applikation programmiert. Diese Applikation kann Daten vom Backup des Zeiterfassungs-Geräts abrufen und verarbeiten. Die Applikation rechnet die Überstunden aus, Markiert Tage wo eine Stemplung vergessen wurde als nicht Korrekter Tag. Nach dem die Daten verarbeitet wurden werden sie in einer MySQL Datenbank abgespeichert. Die Daten werden dann mit mit Hilfe einer php-Applikation auf der Webseite angezeigt.
-
+## Diagram
+![Diagram](https://github.com/SwissPvP2003/BLJ-Zeiterfassungssystem/blob/master/images/Diagram.png?raw=true "Diagram")
 ## Aufgetretene Probleme
 Ich konnte am Anfang nicht auf die Daten des Gerätes zugreifen. Mit Urs hilfe habe ich ein Weg herausgefunden wie ich Daten bekommen kann. Das Gerät macht regelmässig ein Backup. Dieses Backup wir in Form von einer Firebase Datenbank gemacht. Da ich auf diese Daten ohne Nutzername und Passwort zugreifen kann war dieses Problem gelöst. Ein anders Problem war, dass ich das Projekt unterschätz habe. Ich war schon nach den ersten Tagen hinter dem Zeitplan und ich konnte das Projekt nicht fertigstellen.
