@@ -59,13 +59,13 @@ $userid = $_SESSION['UserID'];
           <button class="collapsible">Stemplungen korrigieren</button>
           <div class="content">
             <form name="blog-form" action="index.php?page=timereport" method="post" class="serch-forms">
-                <select name="userauswahl123" id="userauswahl">
+                <select name="userauswahlcorrectstamps" id="userauswahl">
                   <?php foreach($allusers as $user): ?>
                     <option value="<?= htmlspecialchars($user['UserID'], ENT_QUOTES, "UTF-8"); ?>"><?= htmlspecialchars($user['UserName'], ENT_QUOTES, "UTF-8"); ?></option>
                   <?php endforeach;?>
                 </select>
-                <input type="date" name="userTag213" id="userTag">
-                <input class="btn btn-primary" type="submit" value="Suchen">
+                <input type="date" name="correctstampsdate" id="userTag">
+                <input class="btn btn-primary" type="submit" value="Suchen" name="correctstampsbutton">
             </form>
             <?php include 'views/correctstamps.view.php';?>
         </div>

@@ -1,54 +1,30 @@
 <?php include 'models/correctstamps.model.php'; ?>
 
-<?php if ($_SERVER['REQUEST_METHOD'] === 'POST'): ?>
-  <?php foreach($selectuserdays as $day): ?>
-      <?php if($day['DayDate'] == $_SESSION['dateuser']): ?>
-        <form name="blog-form" action="index.php?page=timereport" method="post" class="serch-forms">
-          <div class="form-actions">
-            <h3>Arbeitszeit:</h3>
-            <p>
-                <?= round(htmlspecialchars($day['worktime'], ENT_QUOTES, "UTF-8"), 2); ?>
-                Stunden
-            </p>
-            <input id="groesse" type="number" step="1" >
-            <input class="btn btn-primary" type="submit" value="Ändern">
-          </div>
-          <div class="form-actions">
-          <h3>Mittagszeit:</h3>
-          <p>
-              <?= round(htmlspecialchars($day['lunchtime'], ENT_QUOTES, "UTF-8"), 2); ?>
-              Stunden
-          </p>
-          <input id="groesse" type="number" step="1" >
-          <input class="btn btn-primary" type="submit" value="Ändern">
-        </div>
-        <div class="form-actions">
-          <h3>Überstunden:</h3>
-          <p>
-              <?= round(htmlspecialchars($day['overtime'], ENT_QUOTES, "UTF-8"), 2); ?>
-              Stunden
-          </p>
-          <input id="groesse" type="number" step="1" >
-          <input class="btn btn-primary" type="submit" value="Ändern">
-        </div>
+<?php if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['correctstampsbutton']) || $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hinzufuegbutton']) || $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aenderbutton'])): ?>
           <h3>Stemplungen:</h3>
-          <?php foreach($selecteduserstamps as $stamp): ?>
-
+          <?php foreach($_SESSION['test'] as $stamp): ?>
               <?php
                   $parts = explode(" ", $stamp['StampDateandTime']);
               ?>
-              <?php if($parts[0] == $_SESSION['dateuser'] && $stamp['IsIgnored'] == 0): ?>
+              <?php if($parts[0] == $_SESSION['correctstampsdate']): ?>
+            <form name="blog-form" action="index.php?page=timereport" method="post" class="serch-forms">
               <div class="form-actions">
                   <p>
                       <?= htmlspecialchars($stamp['StampDateandTime'], ENT_QUOTES, "UTF-8"); ?>
+                      <?= htmlspecialchars($stamp['IsIgnored'], ENT_QUOTES, "UTF-8"); ?>
                   </p>
-                  <input type="datetime-local" name="geburtsdatum">
-                  <input class="btn btn-primary" type="submit" value="Ändern">
+                  <input type="hidden" name="stampdateandtimefromdb" value="<?= htmlspecialchars($stamp['StampDateandTime'], ENT_QUOTES, "UTF-8"); ?>">
+                  <input type="datetime-local" name="datumundzeit" required>
+                  <input class="btn btn-primary" type="submit" value="Ändern" name="aenderbutton">
+                  <input class="btn btn-danger" type="submit" value="Löschen">
               </div>
               <?php endif; ?>
-
+            </form>
           <?php endforeach;?>
+          <div class="form-actions">
+          <form name="blog-form" action="index.php?page=timereport" method="post" class="serch-forms">
+            <input type="datetime-local" name="datumundzeit">
+            <input class="btn btn-success" type="submit" value="Hinzufügen" name="hinzufuegbutton">
           </form>
-      <?php endif; ?>
-  <?php endforeach;?>
+        </div>
 <?php endif; ?>
