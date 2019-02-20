@@ -9,8 +9,8 @@ $dbh = new PDO('mysql:host=localhost;dbname=timecounterdb', $user, $pass);
 
     }
 
-    $stmt2 = $dbh->prepare('SELECT * FROM stamps where UserID = ' . $_SESSION['UserID']);
-    $stmt2->execute();
+    $stmt2 = $dbh->prepare('SELECT * FROM stamps where UserID = :UserID order by StampDateandTime');
+    $stmt2->execute([':UserID' => $_SESSION['UserID']]);
     $userstamps = $stmt2->fetchAll();
 
     $stmt3 = $dbh->prepare('SELECT * FROM days where UserID = ' . $_SESSION['UserID']);

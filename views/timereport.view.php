@@ -40,22 +40,6 @@ $userid = $_SESSION['UserID'];
             </div>
             <?php foreach($users as $user): ?>
               <?php if($user['isAdmin'] == true): ?>
-            <button class="collapsible">Zeiten korrigieren</button>
-            <div class="content">
-                <form name="blog-form" action="index.php?page=timereport" method="post" class="serch-forms">
-                    <select name="userauswahl123" id="userauswahl">
-                      <?php foreach($allusers as $user): ?>
-                        <?php if($_SESSION['UserIDselected'] == $user['UserID']):?>
-                        <option value="<?= htmlspecialchars($user['UserID'], ENT_QUOTES, "UTF-8"); ?>" selected><?= htmlspecialchars($user['UserName'], ENT_QUOTES, "UTF-8"); ?></option>
-                      <?php else:?>
-                        <option value="<?= htmlspecialchars($user['UserID'], ENT_QUOTES, "UTF-8"); ?>"><?= htmlspecialchars($user['UserName'], ENT_QUOTES, "UTF-8"); ?></option>
-                      <?php endif;?>
-                      <?php endforeach;?>
-                    </select>
-                    <input class="btn btn-primary" type="submit" value="Suchen">
-                </form>
-              <?php include 'views/correctusertimes.view.php';?>
-          </div>
           <button class="collapsible">Stemplungen korrigieren</button>
           <div class="content">
             <form name="blog-form" action="index.php?page=timereport" method="post" class="serch-forms">

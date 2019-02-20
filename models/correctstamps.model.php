@@ -13,37 +13,54 @@ function gethoechsteid($selecteduserstampsID){
 if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['correctstampsbutton'])){
   $_SESSION['userauswahlcorrectstamps'] = trim($_POST['userauswahlcorrectstamps'] ??'');
   $_SESSION['correctstampsdate'] = trim($_POST['correctstampsdate'] ?? '');
-  $stmt1 = $dbh->prepare('SELECT * FROM stamps where UserID = ' . $_SESSION['userauswahlcorrectstamps']);
-  $stmt1->execute();
+  $stmt1 = $dbh->prepare('SELECT * FROM stamps where UserID = :userauswahlcorrectstamps order by StampDateandTime asc');
+  $stmt1->execute([':userauswahlcorrectstamps' => $_SESSION['userauswahlcorrectstamps']]);
   $selecteduserstamps = $stmt1->fetchAll();
-  $_SESSION['test'] = $selecteduserstamps;
+  $_SESSION['selecteduserstamps'] = $selecteduserstamps;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aenderbutton'])) {
 
     $userid = $_SESSION['userauswahlcorrectstamps'];
     $stampdateandtimefromdb = $_POST['stampdateandtimefromdb'];
-    $datumundzeit = $_POST['datumundzeit'];
-    $datumundzeit = $datumundzeit . ":00";
-    $parts = explode("T", $datumundzeit);
-    $datumundzeit = $parts[0] . " " . $parts[1];
+    $zeit = $_POST['zeit'] . ":00";
 
     $stmt2 = $dbh->prepare('SELECT * FROM stamps order by StampID asc');
     $stmt2->execute();
     $selecteduserstampsID = $stmt2->fetchAll();
 
     $höchsteID = gethoechsteid($selecteduserstampsID);
+
+    $stringparts = explode(" ", $stampdateandtimefromdb);
+
+    $zeit = $stringparts[0] . " " . $zeit;
+
     $stmt = $dbh->prepare("UPDATE `stamps` SET IsIgnored = true WHERE UserID = :UserID AND StampDateandTime = :DayDate");
     $stmt->execute([':DayDate' => $stampdateandtimefromdb, ':UserID' => $userid]);
 
     $stmt = $dbh->prepare("INSERT INTO `stamps` (StampID, StampDateandTime, StampWorkcode, IsIgnored, UserID) VALUES(:StampID, :StampDateandTime, :StampWorkcode, :IsIgnored, :UserID) ");
-    $stmt->execute([':StampID' => $höchsteID + 1, ':StampDateandTime' => $datumundzeit, ':StampWorkcode' => 2, ':IsIgnored' => 0, ':UserID' => $userid]);
+    $stmt->execute([':StampID' => $höchsteID + 1, ':StampDateandTime' => $zeit, ':StampWorkcode' => 2, ':IsIgnored' => 0, ':UserID' => $userid]);
+
 
   }
   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hinzufuegbutton'])) {
 
+    $userid = $_SESSION['userauswahlcorrectstamps'];
+    $stampdateandtimefromdb = $_POST['stampdateandtimefromdb'];
+    $zeit = $_POST['zeit'] . ":00";
+
+    $stmt2 = $dbh->prepare('SELECT * FROM stamps order by StampID asc');
+    $stmt2->execute();
+    $selecteduserstampsID = $stmt2->fetchAll();
+
+    $höchsteID = gethoechsteid($selecteduserstampsID);
+
+    $stringparts = explode(" ", $stampdateandtimefromdb);
+
+    $zeit = $stringparts[0] . " " . $zeit;
+    
+    $stmt = $dbh->prepare("INSERT INTO `stamps` (StampID, StampDateandTime, StampWorkcode, IsIgnored, UserID) VALUES(:StampID, :StampDateandTime, :StampWorkcode, :IsIgnored, :UserID) ");
+    $stmt->execute([':StampID' => $höchsteID + 1, ':StampDateandTime' => $zeit, ':StampWorkcode' => 2, ':IsIgnored' => 0, ':UserID' => $userid]);
 
     }
-
-
  ?>
