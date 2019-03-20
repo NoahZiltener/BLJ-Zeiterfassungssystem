@@ -2,7 +2,7 @@
 
 session_start();
 if(!isset($_SESSION['UserID'])) {
-    header("Location: http://localhost/Projekt-BLJ/index.php?page=login                                                                                                                                                                                  ");
+    header("Location: http://localhost/Projekt-BLJ-neu/index.php?page=login                                                                                                                                                                                  ");
 }
 
 $user = 'root';
@@ -45,5 +45,10 @@ foreach($alluserdays as $day){
     }
 }
 $averagelunchtime = $averagelunchtime / $i2;
-
+$forgotstamps = 0;
+foreach($alluserdays as $day){
+    if($day['DayIsValide'] == false){
+        $forgotstamps++;
+    }
+}
 ?>

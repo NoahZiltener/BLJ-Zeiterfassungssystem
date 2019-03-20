@@ -3,8 +3,8 @@ $user = 'root';
 $pass = '';
 $dbh = new PDO('mysql:host=localhost;dbname=timecounterdb', $user, $pass);
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tagessuchebutton'])){
-        $_SESSION['date'] = trim($_POST['dayserch'] ?? '');
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['dayserchbuttom'])){
+        $_SESSION['date'] = trim($_POST['dayserchdate'] ?? '');
 
 
     }

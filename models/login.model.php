@@ -3,8 +3,8 @@ session_start();
 $dbh = new PDO('mysql:host=localhost;dbname=timecounterdb', 'root', '');
 $errors  = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $UserName = $_POST['UserName']  ??'';
-    $passwd = $_POST['passwd']  ??'';
+    $UserName = $_POST['loginusername']  ??'';
+    $passwd = $_POST['loginpassword']  ??'';
 
     $statement = $dbh->prepare("SELECT * FROM users WHERE UserName = :UserName");
     $result = $statement->execute(array(':UserName' => $UserName));
@@ -15,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['UserID'] = $user['UserID'];
         $_SESSION['UserName'] = $user['UserName'];
         header("Location: http://localhost/Projekt-BLJ/index.php?page=timereport");
-
     } else {
         $errors[] = "E-Mail oder Passwort war ungültig";
     }
