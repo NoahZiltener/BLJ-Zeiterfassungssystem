@@ -1,10 +1,10 @@
 <?php
 include 'models/serchday.model.php';
 ?>
-<?php if ($_SERVER['REQUEST_METHOD'] === 'POST' && count($userdays) > 0 && isset($_POST['dayserchbuttom'])): ?>
+<?php if (isset($_SESSION['userstamps']) == true): ?>
   <?php $dayfound = false; ?>
   <div class="w3-container">
-            <?php foreach($userdays as $day): ?>
+            <?php foreach($_SESSION['userdays'] as $day): ?>
                 <?php if($day['DayDate'] == $_SESSION['date']): ?>
                   <?php $dayfound = true; ?>
                   <?php if($day['DayIsValide'] == true): ?>
@@ -27,19 +27,26 @@ include 'models/serchday.model.php';
                         <?= round(htmlspecialchars($day['overtime'], ENT_QUOTES, "UTF-8"), 2); ?>
                         Stunden
                     </p>
+                    <h6 class="w3-opacity"><b>Kommentar</b></h6>
+                    <textarea name="daycommenttxt" rows="5" class="w3-input w3-border" readonly><?= htmlspecialchars($day['DayComment'], ENT_QUOTES, "UTF-8") ?></textarea>
                     <h6 class="w3-opacity"><b>Stemplungen</b></h6>
-            <?php foreach($userstamps as $stamp): ?>
+            <?php foreach($_SESSION['userstamps'] as $stamp): ?>
                 <?php
                     $parts = explode(" ", $stamp['StampDateandTime']);
                 ?>
                 <?php if($parts[0] == $_SESSION['date'] && $stamp['IsIgnored'] == 0): ?>
                     <p>
-                        <?= htmlspecialchars($stamp['StampDateandTime'], ENT_QUOTES, "UTF-8"); ?>
+                        <?= htmlspecialchars($stamp['StampDateandTime'], ENT_QUOTES, "UTF-8") . ": "?>
+                        <?php if ($stamp['StampDateandTime'] > 0): ?>
+                          <?php foreach ($workcodes as $workcode): ?>
+                            <?php if ($stamp['StampWorkcode'] == $workcode['WorkcodeID']): ?>
+                              <?= htmlspecialchars($workcode['WorkcodeName'], ENT_QUOTES, "UTF-8") ?>
+                            <?php endif; ?>
+                          <?php endforeach; ?>
+                        <?php endif; ?>
                     </p>
-                    <p>
-                        <?= htmlspecialchars($stamp['StampRemark'], ENT_QUOTES, "UTF-8"); ?>
-                    </p>
-
+                    <textarea name="<?= $stamp['StampID']?>" rows="3" class="w3-input w3-border" readonly><?= $stamp['StampRemark']?></textarea>
+                    <hr>
                 <?php endif; ?>
             <?php endforeach;?>
                 <?php endif; ?>

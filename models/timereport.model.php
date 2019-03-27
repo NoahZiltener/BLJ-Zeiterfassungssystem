@@ -2,7 +2,7 @@
 
 session_start();
 if(!isset($_SESSION['UserID'])) {
-    header("Location: http://localhost/Projekt-BLJ-neu/index.php?page=login                                                                                                                                                                                  ");
+    header("Location: http://localhost/Projekt-BLJ/index.php?page=login                                                                                                                                                                                  ");
 }
 
 $user = 'root';

@@ -84,17 +84,17 @@ namespace WindowsFormsApp1
             adap.SelectCommand = cmd;
 
             
-            //AddTableDataToGrid("schedules", cmd, adap);
+            AddTableDataToGrid("schedules", cmd, adap);
             AddTableDataToGrid("ATTENDANT", cmd, adap);
             AddTableDataToGrid("DEPARTMENTS", cmd, adap);
-            //AddTableDataToGrid("DEVICES", cmd, adap);
-            //AddTableDataToGrid("EXTRATIME", cmd, adap);
-            //AddTableDataToGrid("IDENTIFICATION", cmd, adap);
-            //AddTableDataToGrid("PAYCLASS", cmd, adap);
-            //AddTableDataToGrid("PAYRULE", cmd, adap);
-            //AddTableDataToGrid("PLANNING", cmd, adap);
+            AddTableDataToGrid("DEVICES", cmd, adap);
+            AddTableDataToGrid("EXTRATIME", cmd, adap);
+            AddTableDataToGrid("IDENTIFICATION", cmd, adap);
+            AddTableDataToGrid("PAYCLASS", cmd, adap);
+            AddTableDataToGrid("PAYRULE", cmd, adap);
+            AddTableDataToGrid("PLANNING", cmd, adap);
             AddTableDataToGrid("USERS", cmd, adap);
-            //AddTableDataToGrid("WORKCODES", cmd, adap);
+            AddTableDataToGrid("WORKCODES", cmd, adap);
 
             //GetTableDataToDatabase("USERS", cmd, adap);
 
