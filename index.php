@@ -1,6 +1,5 @@
 <?php
     $page = $_GET['page'] ?? 'timereport';
-
     $pages = [
         'login',
         'timereport',
