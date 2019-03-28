@@ -1,8 +1,7 @@
 <?php
-
 session_start();
 if(!isset($_SESSION['UserID'])) {
-    header("Location: http://localhost/Projekt-BLJ/index.php?page=login                                                                                                                                                                                  ");
+  header("Location: http://localhost/Projekt-BLJ/index.php?page=login                                                                                                                                                                                  ");
 }
 
 $user = 'root';
@@ -11,44 +10,43 @@ $dbh = new PDO('mysql:host=localhost;dbname=timecounterdb', $user, $pass);
 
 $stmt = $dbh->prepare('SELECT * FROM users where UserID = ' . $_SESSION['UserID']);
 $stmt->execute();
-$users = $stmt->fetchAll();
+$timeport_selected_user = $stmt->fetchAll();
 
-$stmt2 = $dbh->prepare('SELECT * FROM stamps where UserID = ' . $_SESSION['UserID']);
-$stmt2->execute();
-$alluserstamps = $stmt2->fetchAll();
+$stmt = $dbh->prepare('SELECT * FROM days where UserID = ' . $_SESSION['UserID']);
+$stmt->execute();
+$timeport_selected_user_days = $stmt->fetchAll();
 
-$stmt3 = $dbh->prepare('SELECT * FROM days where UserID = ' . $_SESSION['UserID']);
-$stmt3->execute();
-$alluserdays = $stmt3->fetchAll();
+$stmt = $dbh->prepare('SELECT * FROM users');
+$stmt->execute();
+$timeport_all_user = $stmt->fetchAll();
 
-$stmt4 = $dbh->prepare('SELECT * FROM users');
-$stmt4->execute();
-$allusers = $stmt4->fetchAll();
-
-$overtime = 0;
-foreach($alluserdays as $day){
-    $overtime = $day['overtime'] + $overtime;
+$timeport_selected_user_overtime = 0;
+foreach($timeport_selected_user_days as $day){
+  $timeport_selected_user_overtime = $day['overtime'] + $timeport_selected_user_overtime;
 }
+
 $i = 0;
-$averageworktime = 0;
-foreach($alluserdays as $day){
-    $averageworktime = $day['worktime'] + $averageworktime;
-    $i++;
+$timeport_selected_user_averageworktime = 0;
+foreach($timeport_selected_user_days as $day){
+  $timeport_selected_user_averageworktime = $day['worktime'] + $timeport_selected_user_averageworktime;
+  $i++;
 }
-$averageworktime = $averageworktime / $i;
-$averagelunchtime = 0;
+$timeport_selected_user_averageworktime = $timeport_selected_user_averageworktime / $i;
+
+$timeport_selected_user_averagelunchtime = 0;
 $i2 = 0;
-foreach($alluserdays as $day){
-    if($day['lunchtime'] > 0.1){
-        $averagelunchtime = $day['lunchtime'] + $averagelunchtime;
+foreach($timeport_selected_user_days as $day){
+  if($day['lunchtime'] > 0.1){
+    $timeport_selected_user_averagelunchtime = $day['lunchtime'] + $timeport_selected_user_averagelunchtime;
     $i2++;
-    }
+  }
 }
-$averagelunchtime = $averagelunchtime / $i2;
-$forgotstamps = 0;
-foreach($alluserdays as $day){
-    if($day['DayIsValide'] == false){
-        $forgotstamps++;
-    }
+$timeport_selected_user_averagelunchtime = $timeport_selected_user_averagelunchtime / $i2;
+
+$timeport_selected_user_forgotstamps = 0;
+foreach($timeport_selected_user_days as $day){
+  if($day['DayIsValide'] == false){
+    $timeport_selected_user_forgotstamps++;
+  }
 }
 ?>

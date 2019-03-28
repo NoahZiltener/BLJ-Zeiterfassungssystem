@@ -3,8 +3,8 @@ session_start();
 $dbh = new PDO('mysql:host=localhost;dbname=timecounterdb', 'root', '');
 $errors  = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $UserName = $_POST['loginusername']  ??'';
-    $passwd = $_POST['loginpassword']  ??'';
+    $UserName = $_POST['login_username_input']  ??'';
+    $passwd = $_POST['login_password_input']  ??'';
 
     $statement = $dbh->prepare("SELECT * FROM users WHERE UserName = :UserName");
     $result = $statement->execute(array(':UserName' => $UserName));
