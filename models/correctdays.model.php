@@ -1,106 +1,106 @@
 <?php
-  $user = 'root';
-  $pass = '';
-  $dbh = new PDO('mysql:host=localhost;dbname=timecounterdb', $user, $pass);
+$user = 'root';
+$pass = '';
+$dbh = new PDO('mysql:host=localhost;dbname=timecounterdb', $user, $pass);
 
-  if (isset($_POST['correctday-submit-button']) == true){
-    $_SESSION['correctday-user-select'] = trim($_POST['correctday-user-select'] ?? '');
-    $_SESSION['correctdaysuserTag'] = trim($_POST['correctday-date-input'] ?? '');
+if (isset($_POST['correctday-submit-button']) == true){
+  $_SESSION['correctday-user-select'] = trim($_POST['correctday-user-select'] ?? '');
+  $_SESSION['correctday-date-input'] = trim($_POST['correctday-date-input'] ?? '');
 
-    $stmt1 = $dbh->prepare('SELECT * FROM days where UserID = ' . $_SESSION['correctday-user-select']);
-    $stmt1->execute();
-    $_SESSION['selecteduserdays'] = $stmt1->fetchAll();
+  $stmt = $dbh->prepare('SELECT * FROM days where UserID = ' . $_SESSION['correctday-user-select']);
+  $stmt->execute();
+  $_SESSION['correctdays_selected_user_days'] = $stmt->fetchAll();
 
-    $stmt2 = $dbh->prepare('SELECT * FROM stamps where UserID = :UserID order by StampDateandTime');
-    $stmt2->execute([':UserID' => $_SESSION['correctday-user-select']]);
-    $_SESSION['selecteduserstamps'] = $stmt2->fetchAll();
+  $stmt = $dbh->prepare('SELECT * FROM stamps where UserID = :UserID order by StampDateandTime');
+  $stmt->execute([':UserID' => $_SESSION['correctday-user-select']]);
+  $_SESSION['correctdays_selected_user_stamps'] = $stmt->fetchAll();
 
-    ?><script language="javascript">document.location.reload;</script><?php
+  ?><script language="javascript">document.location.reload;</script><?php
+}
+
+if (isset($_POST['correctday-save-button']) == true){
+  $correctdays_selected_user_worktime_corrected = $_POST['correctday-correctedworktime-input'];
+  $correctdays_selected_date_corrected = $_SESSION['correctday-date-input'];
+  $correctdays_selected_user_id = $_SESSION['correctday-user-select'];
+  $correctdays_day_comment_textarea = $_POST['correctdays_day_comment_textarea'] ?? '';
+
+  $correctdays_selected_user_overtime_corrected = 0;
+  if($correctdays_selected_user_worktime_corrected > 8){
+    $correctdays_selected_user_overtime_corrected = $correctdays_selected_user_worktime_corrected - 8;
+  }
+  else if ($correctdays_selected_user_worktime_corrected < 8) {
+    $correctdays_selected_user_overtime_corrected = $correctdays_selected_user_worktime_corrected - 8;
   }
 
-  if (isset($_POST['daycorrectsavebutton']) == true){
-    $Worktime = $_POST['correctedworktime'];
-    $serchdate = $_SESSION['correctdaysuserTag'];
-    $userid = $_SESSION['correctday-user-select'];
-    $daycommenttxt = $_POST['daycommenttxt'] ?? '';
+  $stmt = $dbh->prepare("UPDATE `days` SET worktime = :Worktime WHERE UserID = :UserID AND DayDate = :DayDate");
+  $stmt->execute([':Worktime' => $correctdays_selected_user_worktime_corrected, ':DayDate' => $correctdays_selected_date_corrected, ':UserID' => $correctdays_selected_user_id]);
 
-    $Overtime = 0;
-    if($Worktime > 8){
-      $Overtime = $Worktime - 8;
+  $stmt = $dbh->prepare("UPDATE `days` SET overtime = :overtime WHERE UserID = :UserID AND DayDate = :DayDate");
+  $stmt->execute([':overtime' => $correctdays_selected_user_overtime_corrected, ':DayDate' => $correctdays_selected_date_corrected, ':UserID' => $correctdays_selected_user_id]);
+
+  $stmt = $dbh->prepare("UPDATE `days` SET DayComment = :daycomment WHERE UserID = :UserID AND DayDate = :DayDate");
+  $stmt->execute([':daycomment' => $correctdays_day_comment_textarea, ':DayDate' => $correctdays_selected_date_corrected, ':UserID' => $correctdays_selected_user_id]);
+
+  foreach ($_SESSION['correctdays_selected_user_stamps'] as $stamp) {
+    $parts = explode(" ", $stamp['StampDateandTime']);
+    if($parts[0] == $_SESSION['correctday-date-input']){
+      $stampID = $stamp["StampID"];
+      $correctdays_stamp_comment_textarea = $_POST["$stampID"];
+
+      $stmt = $dbh->prepare("UPDATE `stamps` SET StampRemark = :stampremark WHERE UserID = :UserID AND StampID = :stampdateandtime");
+      $stmt->execute([':stampremark' => $correctdays_stamp_comment_textarea, ':stampdateandtime' => $stampID, ':UserID' => $correctdays_selected_user_id]);
     }
-    else if ($Worktime < 8) {
-      $Overtime = $Worktime - 8;
-    }
-
-    $stmt1 = $dbh->prepare("UPDATE `days` SET worktime = :Worktime WHERE UserID = :UserID AND DayDate = :DayDate");
-    $stmt1->execute([':Worktime' => $Worktime, ':DayDate' => $serchdate, ':UserID' => $userid]);
-
-    $stmt2 = $dbh->prepare("UPDATE `days` SET overtime = :overtime WHERE UserID = :UserID AND DayDate = :DayDate");
-    $stmt2->execute([':overtime' => $Overtime, ':DayDate' => $serchdate, ':UserID' => $userid]);
-
-    $stmt3 = $dbh->prepare("UPDATE `days` SET DayComment = :daycomment WHERE UserID = :UserID AND DayDate = :DayDate");
-    $stmt3->execute([':daycomment' => $daycommenttxt, ':DayDate' => $serchdate, ':UserID' => $userid]);
-
-    foreach ($_SESSION['selecteduserstamps'] as $stamp) {
-      $parts = explode(" ", $stamp['StampDateandTime']);
-      if($parts[0] == $_SESSION['correctdaysuserTag']){
-        $stampID = $stamp["StampID"];
-        $stampremarktxt = $_POST["$stampID"];
-
-        $stmt4 = $dbh->prepare("UPDATE `stamps` SET StampRemark = :stampremark WHERE UserID = :UserID AND StampID = :stampdateandtime");
-        $stmt4->execute([':stampremark' => $stampremarktxt, ':stampdateandtime' => $stampID, ':UserID' => $userid]);
-      }
-    }
-
-    $stmt5 = $dbh->prepare('SELECT * FROM days where UserID = ' . $_SESSION['correctday-user-select']);
-    $stmt5->execute();
-    $_SESSION['selecteduserdays'] = $stmt5->fetchAll();
-
-    $stmt6 = $dbh->prepare('SELECT * FROM stamps where UserID = :UserID order by StampDateandTime');
-    $stmt6->execute([':UserID' => $_SESSION['correctday-user-select']]);
-    $_SESSION['selecteduserstamps'] = $stmt6->fetchAll();
-
-    ?><script language="javascript">document.location.reload;</script><?php
   }
-  if (isset($_POST['dayaddbutton']) == true) {
 
-    $serchdate = $_SESSION['correctdaysuserTag'];
-    $userid = $_SESSION['correctday-user-select'];
-    $Worktime = $_POST['dayaddcorrectedworktime'];
-    $lunchtime = $_POST['dayaddcorrectedlunchtime'];
-    $daycommenttxt = $_POST['daycommenttxt'] ?? '';
+  $stmt = $dbh->prepare('SELECT * FROM days where UserID = ' . $_SESSION['correctday-user-select']);
+  $stmt->execute();
+  $_SESSION['correctdays_selected_user_days'] = $stmt->fetchAll();
 
-    $Overtime = 0;
-    if($Worktime > 8){
-      $Overtime = $Worktime - 8;
-    }
-    else if ($Worktime < 8) {
-      $Overtime = $Worktime - 8;
-    }
+  $stmt = $dbh->prepare('SELECT * FROM stamps where UserID = :UserID order by StampDateandTime');
+  $stmt->execute([':UserID' => $_SESSION['correctday-user-select']]);
+  $_SESSION['correctdays_selected_user_stamps'] = $stmt->fetchAll();
 
-    $stmt1 = $dbh->prepare('SELECT * FROM `days` order by DayID ASC');
-    $stmt1->execute();
-    $alldays = $stmt1->fetchAll();
+  ?><script language="javascript">document.location.reload;</script><?php
+}
+if (isset($_POST['correctdays_day_add_button']) == true) {
 
-    foreach ($alldays as $day) {
-        $highestID = $day['DayID'];
-    }
+  $correctdays_selected_date_corrected = $_SESSION['correctday-date-input'];
+  $correctdays_selected_user_id = $_SESSION['correctday-user-select'];
+  $correctdays_selected_user_worktime_corrected = $_POST['correctdays_day_corrected_worktime_input'];
+  $correctdays_selected_user_lunchtime_corrected = $_POST['correctdays_day_corrected_lunchtime_input'];
+  $correctdays_day_comment_textarea = $_POST['correctdays_day_comment_textarea'] ?? '';
 
-    $stmt2 = $dbh->prepare("INSERT INTO `days` (DayID, DayDate, DayIsValide, UserID, overtime, TimeOfDay, worktime, lunchtime, DayComment) VALUES(:DayID, :DayDate, :IsValide, :UserID, :overtime, :TimeOfDay, :worktime, :lunchtime, :DayComment) ");
-    $stmt2->execute([':DayID' => 1 + $highestID, ':DayDate' => $serchdate, ':IsValide' => true, ':UserID' => $userid, ':overtime' => $Overtime, ':TimeOfDay' => $Worktime + $lunchtime, ':worktime' => $Worktime, ':lunchtime' => $lunchtime, ':DayComment' => $daycommenttxt]);
-
-    $stmt5 = $dbh->prepare('SELECT * FROM days where UserID = ' . $_SESSION['correctday-user-select']);
-    $stmt5->execute();
-    $_SESSION['selecteduserdays'] = $stmt5->fetchAll();
-
-    $stmt6 = $dbh->prepare('SELECT * FROM stamps where UserID = :UserID order by StampDateandTime');
-    $stmt6->execute([':UserID' => $_SESSION['correctday-user-select']]);
-    $_SESSION['selecteduserstamps'] = $stmt6->fetchAll();
-
-    ?><script language="javascript">document.location.reload;</script><?php
-
+  $correctdays_selected_user_overtime_corrected = 0;
+  if($correctdays_selected_user_worktime_corrected > 8){
+    $correctdays_selected_user_overtime_corrected = $correctdays_selected_user_worktime_corrected - 8;
   }
-  $stmt4 = $dbh->prepare('SELECT * FROM workcodes');
-  $stmt4->execute();
-  $workcodes = $stmt4->fetchAll();
+  else if ($correctdays_selected_user_worktime_corrected < 8) {
+    $correctdays_selected_user_overtime_corrected = $correctdays_selected_user_worktime_corrected - 8;
+  }
+
+  $stmt = $dbh->prepare('SELECT * FROM `days` order by DayID ASC');
+  $stmt->execute();
+  $alldays = $stmt->fetchAll();
+
+  foreach ($alldays as $day) {
+    $highestID = $day['DayID'];
+  }
+
+  $stmt = $dbh->prepare("INSERT INTO `days` (DayID, DayDate, DayIsValide, UserID, overtime, TimeOfDay, worktime, lunchtime, DayComment) VALUES(:DayID, :DayDate, :IsValide, :UserID, :overtime, :TimeOfDay, :worktime, :lunchtime, :DayComment) ");
+  $stmt->execute([':DayID' => 1 + $highestID, ':DayDate' => $correctdays_selected_date_corrected, ':IsValide' => true, ':UserID' => $correctdays_selected_user_id, ':overtime' => $correctdays_selected_user_overtime_corrected, ':TimeOfDay' => $correctdays_selected_user_worktime_corrected + $correctdays_selected_user_lunchtime_corrected, ':worktime' => $correctdays_selected_user_worktime_corrected, ':lunchtime' => $correctdays_selected_user_lunchtime_corrected, ':DayComment' => $correctdays_day_comment_textarea]);
+
+  $stmt = $dbh->prepare('SELECT * FROM days where UserID = ' . $_SESSION['correctday-user-select']);
+  $stmt->execute();
+  $_SESSION['correctdays_selected_user_days'] = $stmt->fetchAll();
+
+  $stmt = $dbh->prepare('SELECT * FROM stamps where UserID = :UserID order by StampDateandTime');
+  $stmt->execute([':UserID' => $_SESSION['correctday-user-select']]);
+  $_SESSION['correctdays_selected_user_stamps'] = $stmt->fetchAll();
+
+  ?><script language="javascript">document.location.reload;</script><?php
+}
+
+$stmt = $dbh->prepare('SELECT * FROM workcodes');
+$stmt->execute();
+$workcodes = $stmt->fetchAll();
 ?>

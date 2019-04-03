@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['changepasswordbutton'
     $newpasswordconfirm = $_POST['newpasswordconfirm']  ??'1';
     if ($newpassword == $newpasswordconfirm) {
       $stmt = $dbh->prepare("UPDATE `users` SET UserPassword = :newpassword WHERE UserID = :UserID");
-      $stmt->execute([':newpassword' => $newpassword_hash, ':UserID' => $_SESSION['UserID']]);
+      $stmt->execute([':newpassword' => $newpassword_hash, ':UserID' => $_SESSION['login_logedin_user_id']]);
       header("Location: http://localhost/Projekt-BLJ/index.php?page=timereport");
     } else {
         $changepassworderrors[] = "Passwörter stimmen nicht überein";

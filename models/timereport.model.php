@@ -1,6 +1,6 @@
 <?php
 session_start();
-if(!isset($_SESSION['UserID'])) {
+if(!isset($_SESSION['login_logedin_user_id'])) {
   header("Location: http://localhost/Projekt-BLJ/index.php?page=login                                                                                                                                                                                  ");
 }
 
@@ -8,11 +8,11 @@ $user = 'root';
 $pass = '';
 $dbh = new PDO('mysql:host=localhost;dbname=timecounterdb', $user, $pass);
 
-$stmt = $dbh->prepare('SELECT * FROM users where UserID = ' . $_SESSION['UserID']);
+$stmt = $dbh->prepare('SELECT * FROM users where UserID = ' . $_SESSION['login_logedin_user_id']);
 $stmt->execute();
 $timeport_selected_user = $stmt->fetchAll();
 
-$stmt = $dbh->prepare('SELECT * FROM days where UserID = ' . $_SESSION['UserID']);
+$stmt = $dbh->prepare('SELECT * FROM days where UserID = ' . $_SESSION['login_logedin_user_id']);
 $stmt->execute();
 $timeport_selected_user_days = $stmt->fetchAll();
 
