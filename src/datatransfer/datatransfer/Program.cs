@@ -50,6 +50,7 @@ namespace datatransfer
             List<Stamp> allstampscopy = new List<Stamp>();
 
             CreateUser(dtu, allusers);
+
             CreateStamp(dtt, allstamps);
             delDoubleStamps(allstamps, allstampscopy);
             CreateDay(allstamps, allDays);

@@ -72,8 +72,12 @@ $userid = $_SESSION['login_logedin_user_id'];
           </div>
         </form>
         <hr>
+        <?php include 'views/correctdays.view.php';?>
       </div>
-      <?php include 'views/correctdays.view.php';?>
+      <div class="w3-container">
+        <h5 class="w3-opacity"><b>Monate Abschliessen</b></h5>
+        <?php include 'views/completemonth.view.php';?>
+      </div>
     </div>
   <?php endif; ?>
 </div>
