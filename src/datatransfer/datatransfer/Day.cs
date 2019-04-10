@@ -21,6 +21,7 @@ namespace datatransfer
 
         static double mandatorylunchtime = Convert.ToDouble(ConfigurationManager.AppSettings.Get("mandatorylunchtime"));
         static double mandatoryworktime = Convert.ToDouble(ConfigurationManager.AppSettings.Get("mandatoryworktime"));
+
         public Day(DateTime dateOfDay, int userid)
         {
             DateOfDay = dateOfDay.Date;

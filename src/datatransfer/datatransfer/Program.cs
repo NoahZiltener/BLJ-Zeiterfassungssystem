@@ -41,22 +41,6 @@ namespace datatransfer
             cmdfd.CommandText = "select * from ATTENDANT order by \"WHEN\" asc";
             adap.Fill(dtt);
 
-            List<User> allusers = new List<User>();
-            List<Stamp> allstamps = new List<Stamp>();
-            List<Day> allDays = new List<Day>();
-            List<User> allusersfromedb = new List<User>();
-            List<Stamp> allstampsfromdb = new List<Stamp>();
-            List<Day> allDaysfromdb = new List<Day>();
-            List<Stamp> allstampscopy = new List<Stamp>();
-
-            CreateUser(dtu, allusers);
-
-            CreateStamp(dtt, allstamps);
-            delDoubleStamps(allstamps, allstampscopy);
-            CreateDay(allstamps, allDays);
-
-            getTime(allDays);
-
             Console.WriteLine("Getting Connection ...");
             MySqlConnection conn = DBUtils.GetDBConnection();
 
@@ -72,16 +56,42 @@ namespace datatransfer
             {
                 Console.WriteLine("Error: " + e.Message);
             }
+
+            List<User> allusers = new List<User>();
+            List<Stamp> allstamps = new List<Stamp>();
+            List<Day> allDays = new List<Day>();
+            List<User> allusersfromedb = new List<User>();
+            List<Stamp> allstampsfromdb = new List<Stamp>();
+            List<Day> allDaysfromdb = new List<Day>();
+            List<Stamp> allstampscopy = new List<Stamp>();
+            List<Month> allMonths = new List<Month>();
+
+            CreateUser(dtu, allusers);
+            CreateStamp(dtt, allstamps);
+            delDoubleStamps(allstamps, allstampscopy);
+            CreateDay(allstamps, allDays);
+
+            createMonthsfromDB(conn, allMonths, allDays);
+            getTime(allDays);
+
+            addDaysToMonths(allMonths, allDays);
+
             getuserfromDB(conn, allusersfromedb);
             getStampsfromDB(conn, allstampsfromdb);
             getDaysfromDB(conn, allDaysfromdb);
 
             InsertUsersInToDB(conn, allusers, allusersfromedb);
             InsertStampsInToDB(conn, allstamps, allstampsfromdb);
-            InsertDaysInToDB(conn, allDays, allDaysfromdb);
+
+            foreach (Month m in allMonths)
+            {
+                if(m.MonthCompleted == false)
+                {
+                    InsertDaysInToDB(conn, m.Days, allDaysfromdb);
+                }
+            }
 
             Console.WriteLine("Transfer successful!");
-            Console.Beep();
 
             Console.ReadKey();
         }
@@ -91,9 +101,10 @@ namespace datatransfer
             {
                 User u = new User();
                 u.ID = Convert.ToInt32(row["ID"]);
-                u.Firstname = row["firstname"].ToString();
-                u.Lastname = row["lastname"].ToString();
+                u.Firstname = Convert.ToString(row["firstname"]).Replace("ä", "ae").Replace("ü", "ue").Replace("ö", "oe");
+                u.Lastname = Convert.ToString(row["lastname"]).Replace("ä", "ae").Replace("ü", "ue").Replace("ö", "oe");
                 u.Username = row["username"].ToString();
+
                 users.Add(u);
             }
             Console.WriteLine("User Createt!");
@@ -532,6 +543,80 @@ namespace datatransfer
                 }
             }
         }
+        static void createMonthsfromDB(MySqlConnection conn, List<Month> allMonths, List<Day> allDays)
+        {
+
+            foreach (Day d in allDays)
+            {
+                String DateofDay;
+                if (Convert.ToString(d.DateOfDay.Month).Length < 2)
+                {
+                    DateofDay = "0" + Convert.ToString(d.DateOfDay.Month) + "-" + Convert.ToString(d.DateOfDay.Year);
+                }
+                else
+                {
+                    DateofDay = Convert.ToString(d.DateOfDay.Month) + "-" + Convert.ToString(d.DateOfDay.Year);
+                }
+
+                try
+                {
+                    string sql1 = "INSERT INTO `months` (MonthDate, MonthCompleted) SELECT @MonthDate, @MonthCompleted WHERE NOT EXISTS (SELECT * FROM months WHERE MonthDate = @MonthDate2)";
+                    MySqlCommand cmd1 = conn.CreateCommand();
+                    cmd1.CommandText = sql1;
+
+                    MySqlParameter MonthDate = new MySqlParameter("@MonthDate", MySqlDbType.VarChar);
+                    MonthDate.Value = DateofDay;
+                    cmd1.Parameters.Add(MonthDate);
+
+                    MySqlParameter MonthCompleted = new MySqlParameter("@MonthCompleted", MySqlDbType.Int16);
+                    MonthCompleted.Value = 0;
+                    cmd1.Parameters.Add(MonthCompleted);
+
+                    MySqlParameter MonthDate2 = new MySqlParameter("@MonthDate2", MySqlDbType.VarChar);
+                    MonthDate2.Value = DateofDay;
+                    cmd1.Parameters.Add(MonthDate2);
+
+                    cmd1.ExecuteNonQuery();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error: " + e);
+                    Console.WriteLine(e.StackTrace);
+                }
+            }
+         
+            string sql2 = "Select * from Months";
+            MySqlCommand cmd2 = new MySqlCommand();
+
+            cmd2.Connection = conn;
+            cmd2.CommandText = sql2;
+
+            using (DbDataReader reader = cmd2.ExecuteReader())
+            {
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        int MonthIDIndex = reader.GetOrdinal("MonthID");
+                        int MonthID = Convert.ToInt32(reader.GetValue(MonthIDIndex));
+
+                        int MonthDateIndex = reader.GetOrdinal("MonthDate");
+                        String MonthDate = Convert.ToString(reader.GetValue(MonthDateIndex));
+
+                        int MonthCompletedIndex = reader.GetOrdinal("MonthCompleted");
+                        bool MonthCompleted = Convert.ToBoolean(reader.GetValue(MonthCompletedIndex));
+
+                        Month m = new Month();
+                        m.MonthID = MonthID;
+                        m.MonthDate = MonthDate;
+                        m.MonthCompleted = MonthCompleted;
+
+
+                        allMonths.Add(m);
+                    }
+                }
+            }
+        }
         static void delDoubleStamps(List<Stamp> allstamps, List<Stamp> allstampscopy)
         {
             foreach (Stamp s in allstamps)
@@ -571,6 +656,30 @@ namespace datatransfer
                     d.worktime = d.GetWorkTime();
                     d.lunchtime = d.Getlunchtime();
                     d.overtime = d.GetOverTime();
+                }
+            }
+        }
+        static void addDaysToMonths(List<Month> allMonths, List<Day> allDays)
+        {
+            foreach (Month m in allMonths)
+            {
+                foreach (Day d in allDays)
+                {
+                    String DateofDay;
+                    if (Convert.ToString(d.DateOfDay.Month).Length < 2)
+                    {
+                        DateofDay = "0" + Convert.ToString(d.DateOfDay.Month) + "-" + Convert.ToString(d.DateOfDay.Year);
+                    }
+                    else
+                    {
+                        DateofDay = Convert.ToString(d.DateOfDay.Month) + "-" +Convert.ToString(d.DateOfDay.Year);
+                    }
+
+                    if (DateofDay == m.MonthDate)
+                    {
+                        Day d2 = d;
+                        m.Days.Add(d2);
+                    }
                 }
             }
         }
