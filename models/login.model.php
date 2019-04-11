@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($login_user !== false && password_verify($login_user_password, $login_user['UserPassword'])) {
         $_SESSION['login_logedin_user_id'] = $login_user['UserID'];
+        $_SESSION['login_logedin_user_name'] = $login_user['UserName'];
         header("Location: http://localhost/Projekt-BLJ/index.php?page=timereport");
     } else {
         $errors[] = "E-Mail oder Passwort war ungültig";

@@ -53,7 +53,7 @@ include 'models/serchday.model.php';
     <?php endforeach;?>
     <?php if($dayfound == false): ?>
       <h6 class="w3-opacity"><b>Kein Eintrag gefunden</b></h6>
+      <hr>
     <?php endif; ?>
-    <hr>
   </div>
 <?php endif; ?>

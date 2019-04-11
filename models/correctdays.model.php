@@ -3,9 +3,9 @@ $user = 'root';
 $pass = '';
 $dbh = new PDO('mysql:host=localhost;dbname=timecounterdb', $user, $pass);
 
-if (isset($_POST['correctday-submit-button']) == true){
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['correctday-submit-button']) == true){
   $_SESSION['correctday-user-select'] = trim($_POST['correctday-user-select'] ?? '');
-  $_SESSION['correctday-date-input'] = trim($_POST['correctday-date-input'] ?? '');
+  $_SESSION['correctday-date-input'] = trim($_POST['correctday-date-input'] ?? NOW());
 
   $stmt = $dbh->prepare('SELECT * FROM days where UserID = ' . $_SESSION['correctday-user-select']);
   $stmt->execute();
@@ -18,7 +18,7 @@ if (isset($_POST['correctday-submit-button']) == true){
   ?><script language="javascript">document.location.reload;</script><?php
 }
 
-if (isset($_POST['correctday-save-button']) == true){
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['correctday-save-button']) == true){
   $correctdays_selected_user_worktime_corrected = $_POST['correctday-correctedworktime-input'];
   $correctdays_selected_date_corrected = $_SESSION['correctday-date-input'];
   $correctdays_selected_user_id = $_SESSION['correctday-user-select'];
@@ -62,7 +62,7 @@ if (isset($_POST['correctday-save-button']) == true){
 
   ?><script language="javascript">document.location.reload;</script><?php
 }
-if (isset($_POST['correctdays_day_add_button']) == true) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['correctdays_day_add_button']) == true) {
 
   $correctdays_selected_date_corrected = $_SESSION['correctday-date-input'];
   $correctdays_selected_user_id = $_SESSION['correctday-user-select'];
@@ -85,9 +85,9 @@ if (isset($_POST['correctdays_day_add_button']) == true) {
   foreach ($alldays as $day) {
     $highestID = $day['DayID'];
   }
-
-  $stmt = $dbh->prepare("INSERT INTO `days` (DayID, DayDate, DayIsValide, UserID, overtime, TimeOfDay, worktime, lunchtime, DayComment) VALUES(:DayID, :DayDate, :IsValide, :UserID, :overtime, :TimeOfDay, :worktime, :lunchtime, :DayComment) ");
-  $stmt->execute([':DayID' => 1 + $highestID, ':DayDate' => $correctdays_selected_date_corrected, ':IsValide' => true, ':UserID' => $correctdays_selected_user_id, ':overtime' => $correctdays_selected_user_overtime_corrected, ':TimeOfDay' => $correctdays_selected_user_worktime_corrected + $correctdays_selected_user_lunchtime_corrected, ':worktime' => $correctdays_selected_user_worktime_corrected, ':lunchtime' => $correctdays_selected_user_lunchtime_corrected, ':DayComment' => $correctdays_day_comment_textarea]);
+  $stmt = $dbh->prepare("INSERT INTO `days` (DayID, DayDate, DayIsValide, UserID, overtime, TimeOfDay, worktime, lunchtime, DayComment) SELECT :DayID, :DayDate, :IsValide, :UserID, :overtime, :TimeOfDay, :worktime, :lunchtime, :DayComment WHERE NOT EXISTS (SELECT * FROM days WHERE DayDate = :DayDate AND :UserID = :UserID)");
+  $stmt->execute([':DayID' => 1 + $highestID, ':DayDate' => $correctdays_selected_date_corrected, ':IsValide' => true, ':UserID' => $correctdays_selected_user_id, ':overtime' => $correctdays_selected_user_overtime_corrected, ':TimeOfDay' => $correctdays_selected_user_worktime_corrected + $correctdays_selected_user_lunchtime_corrected, ':worktime' => $correctdays_selected_user_worktime_corrected, ':lunchtime' => $correctdays_selected_user_lunchtime_corrected,
+  ':DayComment' => $correctdays_day_comment_textarea]);
 
   $stmt = $dbh->prepare('SELECT * FROM days where UserID = ' . $_SESSION['correctday-user-select']);
   $stmt->execute();

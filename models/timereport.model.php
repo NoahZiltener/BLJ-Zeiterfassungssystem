@@ -43,10 +43,10 @@ foreach($timeport_selected_user_days as $day){
 }
 $timeport_selected_user_averagelunchtime = $timeport_selected_user_averagelunchtime / $i2;
 
-$timeport_selected_user_forgotstamps = 0;
+$timeport_selected_user_forgotstamps = [];
 foreach($timeport_selected_user_days as $day){
   if($day['DayIsValide'] == false){
-    $timeport_selected_user_forgotstamps++;
+    $timeport_selected_user_forgotstamps[] = $day['DayDate'];
   }
 }
 ?>

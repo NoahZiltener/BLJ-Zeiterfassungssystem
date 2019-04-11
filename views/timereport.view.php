@@ -18,8 +18,10 @@ $userid = $_SESSION['login_logedin_user_id'];
       <p><?=round($timeport_selected_user_averageworktime, 2) . " Stunden"?></p>
       <h5 class="w3-opacity"><b>Durchschnittliche Mittagszeit</b></h5>
       <p><?=round($timeport_selected_user_averagelunchtime, 2) . " Stunden"?></p>
-      <h5 class="w3-opacity"><b>Vergessene Stempelung</b></h5>
-      <p><span class="w3-badge w3-red"><?=$timeport_selected_user_forgotstamps?></span></p>
+      <h5><b class="w3-opacity">Vergessene Stempelung </b><span class="w3-badge w3-red w3-small"><?=sizeof($timeport_selected_user_forgotstamps)?></span></h5>
+      <?php foreach($timeport_selected_user_forgotstamps as $forgotstamp): ?>
+        <p><?= $forgotstamp ?></p>
+      <?php endforeach; ?>
       <hr>
       <p class="w3-large w3-text-theme"><b><i class="fa fa-user fa-fw w3-margin-right w3-text-b"></i>Profil</b></p>
       <div class="w3-container">
@@ -67,7 +69,7 @@ $userid = $_SESSION['login_logedin_user_id'];
                 <option value="<?= htmlspecialchars($user['UserID'], ENT_QUOTES, "UTF-8"); ?>"><?= htmlspecialchars($user['UserName'], ENT_QUOTES, "UTF-8"); ?></option>
               <?php endforeach;?>
             </select>
-            <input class="w3-input w3-border w3-margin-right w3-bar-item" type="date" style="width:30%" name="correctday-date-input">
+            <input class="w3-input w3-border w3-margin-right w3-bar-item" type="date" style="width:30%" name="correctday-date-input" required>
             <input class="w3-button w3-black w3-bar-item w3-button w3-large" type="submit" value="Suchen" name="correctday-submit-button">
           </div>
         </form>
