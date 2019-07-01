@@ -36,7 +36,7 @@ namespace datatransfer
             FbDataAdapter adap = new FbDataAdapter();
             adap.SelectCommand = cmdfd;
 
-            cmdfd.CommandText = "select * from USERS";
+            cmdfd.CommandText = "select * from USERS where STATEID = 1";
             adap.Fill(dtu);
             cmdfd.CommandText = "select * from ATTENDANT order by \"WHEN\" asc";
             adap.Fill(dtt);
@@ -107,7 +107,7 @@ namespace datatransfer
 
                 users.Add(u);
             }
-            Console.WriteLine("User Createt!");
+            Console.WriteLine("Users Created!");
         }
         static void CreateStamp(DataTable dt, List<Stamp> stamps)
         {
