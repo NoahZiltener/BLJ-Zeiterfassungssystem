@@ -1,12 +1,10 @@
 <?php
 session_start();
 if(!isset($_SESSION['login_logedin_user_id'])) {
-  header("Location: http://localhost/Projekt-BLJ/index.php?page=login                                                                                                                                                                                  ");
+  header("Location: http://localhost/TimeCounter/Projekt-BLJ/index.php?page=login");
 }
 
-$user = 'root';
-$pass = '';
-$dbh = new PDO('mysql:host=localhost;dbname=timecounterdb', $user, $pass);
+$dbh = new PDO('mysql:host=localhost;dbname=timecounterdb', 'root', '');
 
 $stmt = $dbh->prepare('SELECT * FROM users where UserID = ' . $_SESSION['login_logedin_user_id']);
 $stmt->execute();

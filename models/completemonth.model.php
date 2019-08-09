@@ -1,7 +1,5 @@
 <?php
-$user = 'root';
-$pass = '';
-$dbh = new PDO('mysql:host=localhost;dbname=timecounterdb', $user, $pass);
+$dbh = new PDO('mysql:host=localhost;dbname=timecounterdb', 'root', '');
 
 $stmt = $dbh->prepare('SELECT * FROM days');
 $stmt->execute();

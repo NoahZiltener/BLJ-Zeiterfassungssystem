@@ -1,7 +1,5 @@
 <?php
-$user = 'root';
-$pass = '';
-$dbh = new PDO('mysql:host=localhost;dbname=timecounterdb', $user, $pass);
+$dbh = new PDO('mysql:host=localhost;dbname=timecounterdb', 'root', '');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['dayserch-submit-button'])){
   $_SESSION['dayserch_selected_user_date'] = trim($_POST['dayserch-date-input'] ?? '');

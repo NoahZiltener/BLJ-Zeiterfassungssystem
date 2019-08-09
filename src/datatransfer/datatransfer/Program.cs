@@ -213,7 +213,7 @@ namespace datatransfer
                     cmd.Parameters.Add(UserEMailParam);
 
                     MySqlParameter UserPasswordParam = new MySqlParameter("@UserPassword", MySqlDbType.VarChar);
-                    UserPasswordParam.Value = "$2y$10$Fio8j1Unk3Mn1Yreu1yAQu6nUhaHrBnRuFHp.9eHRI12uOIjMNvla";
+                    UserPasswordParam.Value = "$2y$10$AF17kIXHYTabNxMGSNKsKehBgAw.jvYDO396l4hNFZ4bwddfuB156";
                     cmd.Parameters.Add(UserPasswordParam);
 
                     MySqlParameter UserFirstNameParam = new MySqlParameter("@UserFirstName", MySqlDbType.VarChar);

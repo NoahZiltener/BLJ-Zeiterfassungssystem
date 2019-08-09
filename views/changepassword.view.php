@@ -18,7 +18,7 @@
         <br>
         <br>
         <input class="w3-display-bottomright w3-button w3-black w3-button w3-large" type="submit" value="Ändern" name="changepasswordbutton">
-        <input class="w3-display-bottomright w3-button w3-black w3-button w3-large" style="right:105px" type="button" value="Abbrechen" name="changepasswordbutton" onclick="window.location.href = 'http://localhost/Projekt-BLJ/index.php?page=timereport';">
+        <input class="w3-display-bottomright w3-button w3-black w3-button w3-large" style="right:105px" type="button" value="Abbrechen" name="changepasswordbutton" onclick="window.location.href = 'http://www.041er-blj.ch/zeit/index.php?page=timereport';">
       </form>
       <br>
     </div>

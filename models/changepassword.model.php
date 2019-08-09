@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['changepasswordbutton'
     if( sizeof($errors) === 0){
       $stmt = $dbh->prepare("UPDATE `users` SET UserPassword = :newpassword WHERE UserID = :UserID");
       $stmt->execute([':newpassword' => $newpassword_hash, ':UserID' => $_SESSION['login_logedin_user_id']]);
-      header("Location: http://localhost/Projekt-BLJ/index.php?page=timereport");
+      header("Location:http://localhost/TimeCounter/Projekt-BLJ/index.php?page=timereport");
     }
 }
 ?>

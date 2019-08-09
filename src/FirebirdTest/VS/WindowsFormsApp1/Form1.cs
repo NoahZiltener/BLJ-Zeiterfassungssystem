@@ -69,7 +69,7 @@ namespace WindowsFormsApp1
             string connectionString =
                 @"User =SYSDBA;" +
                 @"Password=masterkey;" +
-                @"Database=C:\xampp\htdocs\Projekt-BLJ\src\FirebirdTest\TADATA.FDB;" +
+                @"Database=D:\5_daten\TimeCounter\Projekt-BLJ\src/TADATA3.FDB;" +
                 @"ServerType=1";
 
             FbConnection con = new FbConnection(connectionString);

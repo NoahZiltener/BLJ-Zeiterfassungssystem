@@ -1,7 +1,5 @@
 <?php
-$user = 'root';
-$pass = '';
-$dbh = new PDO('mysql:host=localhost;dbname=timecounterdb', $user, $pass);
+$dbh = new PDO('mysql:host=localhost;dbname=timecounterdb', 'root', '');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['correctday-submit-button']) == true){
   $_SESSION['correctday-user-select'] = trim($_POST['correctday-user-select'] ?? '');
@@ -10,6 +8,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['correctday-submit-but
   $stmt = $dbh->prepare('SELECT * FROM days where UserID = ' . $_SESSION['correctday-user-select']);
   $stmt->execute();
   $_SESSION['correctdays_selected_user_days'] = $stmt->fetchAll();
+
+  $stmt = $dbh->prepare('SELECT * FROM users where UserID = ' . $_SESSION['correctday-user-select']);
+  $stmt->execute();
+  $_SESSION['correctdays_selected_user'] = $stmt->fetchAll();
 
   $stmt = $dbh->prepare('SELECT * FROM stamps where UserID = :UserID order by StampDateandTime');
   $stmt->execute([':UserID' => $_SESSION['correctday-user-select']]);
@@ -40,6 +42,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['correctday-save-butto
 
   $stmt = $dbh->prepare("UPDATE `days` SET DayComment = :daycomment WHERE UserID = :UserID AND DayDate = :DayDate");
   $stmt->execute([':daycomment' => $correctdays_day_comment_textarea, ':DayDate' => $correctdays_selected_date_corrected, ':UserID' => $correctdays_selected_user_id]);
+
+  $stmt = $dbh->prepare("UPDATE `days` SET lastchangefrom = :lastchangefrom WHERE UserID = :UserID AND DayDate = :DayDate");
+  $stmt->execute([':lastchangefrom' => $_SESSION['login_logedin_user_name'], ':DayDate' => $correctdays_selected_date_corrected, ':UserID' => $correctdays_selected_user_id]);
+
+  $stmt = $dbh->prepare("UPDATE `days` SET lastchangeat = NOW() WHERE UserID = :UserID AND DayDate = :DayDate");
+  $stmt->execute([':DayDate' => $correctdays_selected_date_corrected, ':UserID' => $correctdays_selected_user_id]);
+
+  $stmt = $dbh->prepare("UPDATE `days` SET ischanged = :ischanged WHERE UserID = :UserID AND DayDate = :DayDate");
+  $stmt->execute([':ischanged' => true, ':DayDate' => $correctdays_selected_date_corrected, ':UserID' => $correctdays_selected_user_id]);
 
   foreach ($_SESSION['correctdays_selected_user_stamps'] as $stamp) {
     $parts = explode(" ", $stamp['StampDateandTime']);
